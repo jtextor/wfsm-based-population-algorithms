@@ -1,0 +1,9 @@
+digraph {
+        rankdir="LR";
+        node [shape=circle];
+        i [style="invis"];
+        i->0;
+        0->1 [label="a/1.000₂"];
+        1->2 [label="a/1.000₂"];
+        2 [shape=doublecircle];
+}
