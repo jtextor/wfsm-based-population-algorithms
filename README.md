@@ -17,7 +17,7 @@ TODO:
     - [ ] Fig. 5C
 - [ ] Acknowledge Vidi grant and disclose interest
 - [ ] License-to-publish agreement
-- [ ] Page numbers?
+- [-] Page numbers?
 - [ ] Remove unused text and references from manuscript
 - [ ] Remove unused figures
 - [ ] Reorder subfigures
