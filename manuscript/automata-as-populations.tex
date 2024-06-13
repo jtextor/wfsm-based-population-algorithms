@@ -89,12 +89,12 @@ We consider strings $x$ over some finite alphabet $\Sigma$.
 %Lowercase Latin letters denote strings.
 E.g., $x=0010 \in \{0,1\}^4$ is a string consisting of 4 binary characters and $x_3=1$ is its third character.
 We write $|S|$ to denote the cardinality of a set $S$.
+Whenever we write $\ell$, its value is the number of characters in some string.
 
 A \emph{population} is a set of strings -- e.g., the genotypes in an EA.
 A \emph{weighted population} consists of a population $S$ and a mapping $w : S \mapsto \mathbb{Q}$ that associates a rational number to each string in $S$ (see~Section~\ref{sectionwhyrationals} for why we choose rationals).
-%% We implement this $w$ with rationals rather than the more usual floats for reasons explained below.
 For clearer distinction, a population $S$ is also called an \emph{unweighted population}.
-We treat unweighted populations interchangeably with weighted populations with only unit weights.
+Unweighted populations are interchangeable with weighted populations with unit weights.
 
 The weights can have different interpretations:
 positive integer weights could be used to simply store multiplicity of individuals in the population,
@@ -176,8 +176,8 @@ we can compress these WFSMs by minimization.
 
 We now briefly review the existing approach from the AIS field where finite state machines
 (FSMs) are used as compressed representations of populations.
-This review helps %% is important to 
-delineate what this approach %% the existing approach
+This review %% is important to 
+delineates what this approach %% the existing approach
 can already accomplish and where it currently falls short.
 
 The AIS algorithms we will consider are classifiers 
@@ -187,13 +187,13 @@ that are based on populations of so-called
 %
 %We use the term \emph{repertoire model} in this paper to denote a type of AIS that is 
 %loosely based on T~cell and B~cell receptor repertoires in the real immune system. 
-\emph{detectors}
-(also called patterns), where each detector is a string that represents
-a small part of some universe $\mathcal{U}$. By extension, detector populations can therefore 
+\emph{detectors},
+%% (also called patterns)
+where each detector is a string that represents
+a small part of a set $\mathcal{U}$ of objects to classify -- also called universe. By extension, detector populations can therefore 
 represent  (``cover'') subsets of $\mathcal{U}$. Although this framework is general and allows 
 $\mathcal{U}$ to be any set, in this paper we focus on strings over some alphabet 
-$\Sigma$. We also focus on the case where strings have a fixed length $\ell$
-($\mathcal{U}=\Sigma^\ell$). 
+$\Sigma$, where each string consists of $\ell$ characters ($\mathcal{U}=\Sigma^\ell$).
 
 % since the generalization of our framework to variable-length 
 %strings is reasonably straightforward. 
@@ -223,34 +223,34 @@ populations.
 Inspired by the way that T~cells are generated and selected in real immune systems,
 there are two main population-based classification algorithms that were studied in the AIS field. 
 Both are so-called \emph{one-class} classification algorithms that take an input 
-sequence $S \in \mathcal{U}^*$ (also called \emph{self}) to construct a detector population $D$, 
+sequence $S \in \mathcal{U}^*$ (also called \emph{self}) to construct a detector population $P$, 
 which is then used to determine whether the elements of a second input sequence $T \in \mathcal{U}^*$ 
 belong to the same class as the elements of $S$:
 
 \begin{definition}[Positive and negative selection]
-Given an input sequence  $S=(s_1,\ldots,s_n) \in \mathcal{U}^n$, 
+Given an input sequence  $S=(s_1,\ldots,s_n) \in \mathcal{U}^n$,
 a detector type $\mathcal{D}$ and a matching function $m$,  we call a 
-detector population $D \subseteq \mathcal{D}$
+detector population $P \subseteq \mathcal{D}$
 \begin{enumerate}
-\item \emph{positively selected} if $D \subseteq \bigcup_i m^{-1}(s_i)$ is a set of detectors 
+\item \emph{positively selected} if $P \subseteq \bigcup_i m^{-1}(s_i)$ is a set of detectors 
 that match at least one input string.
-\item \emph{negatively selected} if $D \subseteq \mathcal{D} \setminus \bigcup_i m^{-1}(s_i)$ 
+\item \emph{negatively selected} if $P \subseteq \mathcal{D} \setminus \bigcup_i m^{-1}(s_i)$ 
 is a set of detectors that do not match any input string. 
 \end{enumerate}
 
-A negatively (positively) selected population $D$ is \emph{maximal} if there is no strict superset of $D$ that is also negatively (positively) selected with respect to the same input $S$. Given a population $D$ and an element $t \in \mathcal{U}$, we define the \emph{scoring function} $D(y) =  |D \cap m^{-1}(y)|$ as the number of detectors in $D$ that match $y$. 
+A negatively (positively) selected population $P$ is \emph{maximal} if there is no strict superset of $P$ that is also negatively (positively) selected with respect to the same input $S$. Given a population $P$ and an element $t \in \mathcal{U}$, we define the \emph{scoring function} $P(y) =  |P \cap m^{-1}(y)|$ as the number of detectors in $P$ that match $y$. 
 \label{definitionposnegsel} % 2 references
 \end{definition}
 
-For a positively selected population, the scoring function can be understood as a \emph{normalcy score} (a high value $D(y)$ means that $y$ is ``similar to'' $S$) whereas for negative selection, the interpretation is the opposite (\emph{anomaly score}). The scores output by a positively or negatively selected population can be used for threshold-based classification. Note that we did not define which specific detectors are used, only which detectors \emph{could} be in the population. A simple method is generating detectors by rejection sampling. However, depending on the input, rejection rates can be high \cite{Dhaeseleer1996,Dhaeseleer1996b}, and the population sizes required to achieve acceptable classification results also %% can be exponential in the input
+For a positively selected population, the scoring function can be understood as a \emph{normalcy score} (a high value $P(y)$ means that $y$ is ``similar to'' $S$) whereas for negative selection, the interpretation is the opposite (\emph{anomaly score}). The scores output by a positively or negatively selected population can be used for threshold-based classification. Note that we did not define which specific detectors are used, only which detectors \emph{could} be in the population. A simple method is generating detectors by rejection sampling. However, depending on the input, rejection rates can be high \cite{Dhaeseleer1996,Dhaeseleer1996b}, and the population sizes required to achieve acceptable classification results also %% can be exponential in the input
 \cite{Stibor2005}. 
 
 These issues motivated the development of population compression 
 techniques \cite{Elberfeld_2009,Elberfeld2011}.
 The basic idea is that FSMs can compactly represent large sets of strings with 
 shared structure (Figure~\ref{fig:fsa-ex}A). This representation has several advantages.
-For any given population $S$, the smallest FSM that represents $S$ can be computed in polynomial time in the 
-size of $S$. The operations that are required to implement positively and negatively selected populations,
+For any given population $P$, the smallest FSM that represents $P$ can be computed in polynomial time in the 
+size of $P$. The operations that are required to implement positively and negatively selected populations,
 such as union, intersection, set difference, and computation of cardinality, can all be efficiently performed directly 
 on the FSM representation.  Since FSMs are generic data structures, this approach benefits 
 from a large body of work done to develop efficient FSM algorithms and high-quality, mature software implementations 
@@ -295,16 +295,16 @@ positive and negative selection with maximal detector sets are equivalent classi
 \end{remark} 
 
 \begin{proof}
-If $D^+$ and $D^-$ are the maximal positively and negatively selected detector sets w.r.t. an input $S$, 
-then we have $D^+ \cup D^- = \mathcal{D}$ and therefore 
+If $P^+$ and $P^-$ are the maximal positively and negatively selected detector populations w.r.t. an input $S$, 
+then we have $P^+ \cup P^- = \mathcal{D}$ and therefore 
 %$(D^+\cap m^{-1}(t)) \cup (D^-\cap m^{-1}(t)) =  m^{-1}(t)$. Therefore 
-$|D^+ \cap m^{-1}(y)|
-+ |D^- \cap m^{-1}(y)|=|m^{-1}(y)|$. Since $|m^{-1}(y)|$ is the same value for all $y \in \mathcal{U}$ 
+$|P^+ \cap m^{-1}(y)|
++ |P^- \cap m^{-1}(y)|=|m^{-1}(y)|$. Since $|m^{-1}(y)|$ is the same value for all $y \in \mathcal{U}$ 
 for the matching rules in Definition~\ref{definitionmatchingrules}, the scoring function of negative 
 selection is a constant minus the scoring function of positive selection, and vice versa.
 \end{proof}
 
-Beyond positive and negative selection, further operations that could be performed with FSM-compressed classifier populations include sampling from $D$ or incrementally modifying $D$ \cite{Textor2014}. However, some important limitations remain. Crucially for classification tasks, negative and positive selection do not take into account possible multiplicity of strings in the input sequences. In many real-world cases, it is important to distinguish, say, an input element that occurs once in the training data from another that occurs thousands of times. Moreover, AIS classifiers are essentially ``one-shot'' in that they process the entire input data only once. Many other population-based algorithms modify the populations in more complex ways that require, for instance, weighted sampling from the population or pruning of low-weight elements from the population. Such operations are not supported by FSM-compressed populations.
+Beyond positive and negative selection, further operations that could be performed with FSM-compressed classifier populations include sampling from $P$ or incrementally modifying $P$ \cite{Textor2014}. However, some important limitations remain. Crucially for classification tasks, negative and positive selection do not take into account possible multiplicity of strings in the input sequences. In many real-world cases, it is important to distinguish, say, an input element that occurs once in the training data from another that occurs thousands of times. Moreover, AIS classifiers are essentially ``one-shot'' in that they process the entire input data only once. Many other population-based algorithms modify the populations in more complex ways that require, for instance, weighted sampling from the population or pruning of low-weight elements from the population. Such operations are not supported by FSM-compressed populations.
 
 %these tasks are not substantially more complicated and can be implemented using very similar algorithmic techniques, which is why we don't discuss them in detail here. Earlier versions of these algorithms only distinguished between empty and nonempty $D \cap m^{-1}(t)$ in the classification step -- in effect binarizing the scoring function at a fixed threshold of 1. 
 
@@ -477,8 +477,8 @@ selection algorithm defined above:
 Given an input sequence  $S=(s_1,\ldots,s_n) \in \mathcal{U}^n$, a detector type $\mathcal{D}$ and a matching function $m$, %%  we define the following:
 %% \begin{enumerate}
 %% \item 
-\emph{weighted positive selection} uses the detector population $D = \biguplus_i m^{-1}(s_i)$ with weights $w(d) = |\{i : d \in m^{-1}(s_i)\}|$ where each detector is weighted by the number of input samples it recognizes.
-The \emph{scoring function} $D_w(t)$ assigns a normalcy score $\sum_{d \in D \cap m^{-1}(t)} w(d)$
+\emph{weighted positive selection} uses the detector population $P = \biguplus_i m^{-1}(s_i)$ with weights $w(d) = |\{i : d \in m^{-1}(s_i)\}|$ where each detector is weighted by the number of input samples it recognizes.
+The \emph{scoring function} $P_w(t)$ assigns a normalcy score $\sum_{d \in P \cap m^{-1}(t)} w(d)$
 to every $t \in \mathcal{U}$.
 %\item \emph{Weighted negative selection} uses the detector population $D = \mathcal{D} \setminus \bigcup_i m^{-1}(s_i)$ with a pre-existing weighting function $w : \mathcal{D} \mapsto \mathbb{R}$. 
 %% \end{enumerate}
@@ -887,8 +887,8 @@ $P \gets \biguplus_{i=1}^n \left( L_i \capdot \{s\} \right)$ \\
   $B \gets$ Hamming ball around $s$ with radius $r$, unit weights \\
   %$E \gets (S_1 \cap H) \cup \ldots \cup (S_n \cap H)$
   $E \gets \biguplus_{i=1}^n \left( L_i \capdot B \right)$ \\
-  $P \gets (S \setminus E) \uplus E$ \\
-  $P \gets \text{prune}(S, p)$
+  $P \gets (P \setminus E) \uplus E$ \\
+  $P \gets \text{prune}(P, p)$
 }
 output heaviest string in $S$
 \label{algorithmweightedea}

@@ -25,7 +25,7 @@ TODO:
 - [ ] Replace this text by final text and build instructions
 - [ ] Uniform subfigure handling; use sans typeface for A, B, ...
 - [X] Address definition 1: r-Hamming matching
-- [ ] Address complaint that symbols are used before their definition
+- [X] Address complaint that symbols are used before their definition
 - [ ] Fix typoes
 - [ ] Let `waga` and `1+1ea` read and convert a DIMACS file for CNF problems instead 
 - [ ] Improve fig. 2 clarity somehow, addressing a complaint
