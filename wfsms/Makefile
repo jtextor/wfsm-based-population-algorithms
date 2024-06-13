@@ -1,8 +1,11 @@
+SHELL = /bin/sh
+.SUFFIXES:
+
 OBJECT_DIR := objects
 TARGET_DIR := targets
 
-WA_LIB_NAMES := termiter sat ratfa rational_weight safe_integer
-WA_TARGET_NAMES := algorithm2
+WA_LIB_NAMES := termiter sat wfsms rational_weight safe_integer
+WA_TARGET_NAMES := algorithm2 ratfa_learn ratfa_classify # boolfa_learn boolfa_classify
 OTHER_TARGET_NAMES := 1+1ea
 
 TARGET_NAMES := $(WA_TARGET_NAMES) $(OTHER_TARGET_NAMES)
@@ -30,6 +33,20 @@ DEPS := $(OBJECTS:%.o=%.d)
 
 all: $(TARGETS)
 	
+
+clean:
+	rm -f $(OBJECTS)
+
+distclean: clean
+	rm -f $(TARGETS)
+
+.PHONY: clean distclean
+
+$(TARGET_DIR)/ratfa_classify: $(RATFA_CLASSIFY_OBJECTS) $(OBJECT_DIR)/ratfa_classify.o | $(TARGET_DIR)
+	$(CXX) -std=c++1z -o $@ $^ -lfst
+
+$(TARGET_DIR)/ratfa_learn: $(RATFA_LEARN_OBJECTS) $(OBJECT_DIR)/ratfa_learn.o | $(TARGET_DIR)
+	$(CXX) -std=c++1z -o $@ $^ -lfst
 
 $(TARGET_DIR)/algorithm2: $(ALGORITHM2_OBJECTS) $(OBJECT_DIR)/algorithm2.o | $(TARGET_DIR)
 	$(CXX) -std=c++1z -o $@ $^ -lfst

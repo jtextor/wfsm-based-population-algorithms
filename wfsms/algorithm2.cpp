@@ -5,7 +5,7 @@
 #include <iostream>
 #include <random>
 
-#include "ratfa.hpp"
+#include "wfsms_fwd.hpp"
 #include "sat.hpp"
 #include "termiter.hpp"
 #include "trim.hpp"
@@ -95,7 +95,7 @@ static ratfa sample_initial(const std::vector<ratfa> &p) {
     std::mt19937 rng(rd());
     std::uniform_int_distribution<int> ranidx(0, p.size()-1);
     int idx = ranidx(rng);
-    return eval(p, exact(sample(p[idx])));
+    return eval(p, singleton<ratfa>(sample(p[idx])));
 }
 
 int main(int argc, char **argv) {
@@ -131,7 +131,7 @@ int main(int argc, char **argv) {
     report(population, fout);
     for (int nsteps=0;; ++nsteps) {
         std::string s = sample(population);
-        ratfa ball = hamming(s, radius, '0', '1'); /* contiguous(s, radius, '0', '1'); */
+        ratfa ball = hamming<ratfa>(s, radius, '0', '1');
         ratfa neig = eval(problem, ball);
         population = insert(population, neig);
         population = prune(population, prunefract, 0 == (nsteps % push_modulo));

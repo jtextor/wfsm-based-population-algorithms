@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "ratfa.hpp"
+#include "wfsms_fwd.hpp"
 
 
 /* Functions below take a string that encodes a clause from a 3-CNF

@@ -1,7 +1,7 @@
 #ifndef TERMITER_HPP
 #define TERMITER_HPP
 
-#include "ratfa.hpp"
+#include "wfsms_fwd.hpp"
 
 
 /* A pair of string and weight.  Called 'term' for the analogy between
