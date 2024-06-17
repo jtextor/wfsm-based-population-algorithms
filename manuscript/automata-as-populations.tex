@@ -5,7 +5,7 @@
 \usepackage{amsfonts}
 \usepackage{graphicx}
 \usepackage[ruled]{algorithm2e} % For algorithms
-\usepackage{stix2}
+\usepackage{stix}
 
 \newcommand{\text}[1]{\textrm{#1}}
 \graphicspath{{../}}
@@ -88,8 +88,8 @@ We have implemented our WFSM-based algorithms in C++, making heavy use of the li
 We consider strings $x$ over some finite alphabet $\Sigma$.
 %Lowercase Latin letters denote strings.
 E.g., $x=0010 \in \{0,1\}^4$ is a string consisting of 4 binary characters and $x_3=1$ is its third character.
+The symbol $\ell$ is always the length of some string.
 We write $|S|$ to denote the cardinality of a set $S$.
-Whenever we write $\ell$, its value is the number of characters in some string.
 
 A \emph{population} is a set of strings -- e.g., the genotypes in an EA.
 A \emph{weighted population} consists of a population $S$ and a mapping $w : S \mapsto \mathbb{Q}$ that associates a rational number to each string in $S$ (see~Section~\ref{sectionwhyrationals} for why we choose rationals).
@@ -99,11 +99,11 @@ Unweighted populations are interchangeable with weighted populations with unit w
 The weights can have different interpretations:
 positive integer weights could be used to simply store multiplicity of individuals in the population,
 whereas fractional weights could represent each individual's importance or fitness.
-Weights in the interval $(0,1]$ could represent probabilities that each element is actually present in the set.
+Weights in the interval $(0,1]$ could represent probabilities of being present in the set.%%  that each element is actually present in the set.
 
 In the following, let $(S, w_S)$, $(T, w_T)$, and $(U, w_U)$ each be weighted populations.
 For simplicity, let $w_A(x)=0$ if $x \notin A$ and let $f = g \star h$ denote $f(x) = g(x) \star h(x)$, where $\star$ is any operation.
-We define three binary operations over weighted populations:
+We define three binary operations over populations:
 
 $S \uplus T = U$ is the \emph{sum} of $S$ and $T$, where $U = S \cup T$ and $w_U = w_S + w_T$.
 
@@ -111,14 +111,15 @@ $S \capdot T = U$ is the \emph{product} of $S$ and $T$, where $U = S \cap T$ and
 
 $S \setminus T = U$ is the \emph{set difference} of $S$ and $T$, where $U = S \setminus T$ and $w_U = w_S$.
 
-This notation is chosen to be distinct from set operations and evocative of the operations where possible.
+%% This notation is chosen to be distinct from set operations where possible.
+
 %We define these three operations in particular,
 %because they correspond closely to known constructions on weighted finite state machines ().
 
 %% We include a definition of WFSMs for completeness,
 %% but note that it can be safely skipped on a first reading.
 
-A \emph{weighted finite state machine} (WFSM) over an alphabet $\Sigma$ and a semiring $\mathbb{K}$ can be defined as a 6-tuple $M = (Q, E, \sigma, k, q_0, F)$,
+A \emph{weighted finite state machine} (WFSM) over an alphabet $\Sigma$ and a semiring $\mathbb{K}$ is a 6-tuple $M = (Q, E, \sigma, k, q_0, F)$,
 where $(Q,E)$ is a directed graph of states as vertices,
 with \emph{initial} state $q_0 \in Q$ and \emph{final} states $F \subseteq Q$.
 Edges $q_i \to q_j$ are labeled by characters $\sigma : E \mapsto \Sigma$ and \emph{weights} $k : E \mapsto \mathbb{K}$.
@@ -137,9 +138,9 @@ state are labeled with the same character.
 A deterministic WFSM is called \emph{minimal} if it has the least
 number of states out of all deterministic WFSMs accepting the same
 language and weights.
-To \emph{minimize} a WFSM $M$ is to find a minimal WFSM accepting $\mathcal{L(M)}$ with weights $w_M$.
+To \emph{minimize} a deterministic WFSM is to find a corresponding minimal WFSM. %% $M$ is to find a minimal WFSM accepting $\mathcal{L(M)}$ with weights $w_M$.
 
-In this framework, ordinary FSMs without weight can be recovered by
+Ordinary FSMs without weight can be recovered from WFSMs by
 substituting for $\mathbb{K}$ the two-element Boolean algebra.
 If we let $\mathbb{K}=\mathbb{Q}$ instead,
 then any WFSM $M$ defines a set of strings $\mathcal{L}(M)$ and an
@@ -366,7 +367,7 @@ Rather than constructing $M$ directly,
 single-string WFSMs are added successively in a binary tree recursion,
 minimizing intermediate and final WFSMs.
 This is similar to the procedure used for weighted positive selection
-in the upcoming Section~\ref{sectionweightedrep}.
+in Section~\ref{sectionweightedrep}.
 
 Thanks to the minimization of the final result,
 even this indirect construction should yield the minimal WFSM
@@ -384,12 +385,12 @@ and minimizing WFSMs.
 In unweighted FSMs, two states can be merged into a single state if
 all of their edges have the same character label and destination.
 In WFSMs  -- after redistributing weights \cite{Mohri2000} --
-these edges need also have the same weight label.
+edges need also have the same weight label.
 Importantly,
 this extra condition is difficult to meet with inexact float arithmetic.
 Figure~\ref{fig:fp-minimization}A (red line)
 demonstrates how inexact arithmetic can
-lead to a dramatic increase in WFSM size.
+lead to a increase in WFSM size.
 
 Typical solutions for this problem with floats are to quantize them or to test for 
 approximate equality rather than exact equality, both of which are implemented in OpenFST.
@@ -556,10 +557,10 @@ We will now investigate how this extension can help to solve classification prob
 Standard unweighted negative and positive selection algorithms
 were based on the assumption that the universe
 $\mathcal{U}$ of elements to be classified is 
-disjointly partitioned into ``self'' and ``nonself'' subsets, and the
-goal was to estimate the boundary between these two classes \cite{Forrest1994,Timmis2008}.
-In theory, such problems can be perfectly solved without taking the multiplicity of input
-strings into account: a single witness string is enough to perfectly decide
+disjointly partitioned into ``self'' and ``nonself'' subsets.
+The goal was to estimate the boundary between these two classes \cite{Forrest1994,Timmis2008},
+which in theory can be solved perfectly without taking the multiplicity of input
+strings into account: a single witness string is enough to decide
 membership.
 
 Unfortunately, many real-world problems do not fit this assumption.
@@ -591,7 +592,7 @@ Flip $x'$ randomly chosen bits of $c$ and return the result.
 In particular, $X(c,0)$ is always $c$, and $X(c,1)$ is always the bitwise
 complement of $c$. 
 
-We can set up a fuzzy classification problem by defining the following 
+One fuzzy classification problem is defined by%% the following 
 membership functions $f_0$ and $f_1$:
 $$
 f_0( x ) = \text{Prob}( X(0^\ell,\mu)=x ) ; f_1( x ) = \text{Prob}( X(1^\ell,\mu)=x ) 
@@ -615,10 +616,10 @@ input samples (Figure~\ref{figurestringdistinction}A, black line). This occurred
 center string of the ``foreign'' class in the input.
 By contrast, weighted positive selection 
 should not be ``fooled'' by such rare events because it can also learn from the frequencies of
-patterns in the input strings. Indeed, while multiplicity in the training set is rare for small
-samples and the two versions initially behaved very similarly, the performance
+patterns in the input strings. Indeed, while small
+samples have little multiplicity and the two versions initially behaved very similarly, the performance
 of weighted selection kept improving with larger samples as expected (Figure~\ref{figurestringdistinction}A, red line).
-Thus, we can indeed conclude that fuzzy classification problems can be difficult to solve using
+Thus, we conclude that fuzzy classification problems can be difficult to solve using
 unweighted AIS classifiers, especially at large sample sizes.
 Weighted positive selection was also more robust to higher mutation 
 rates $\mu$ (Figure~\ref{figurestringdistinction}B), which -- similar to larger input 
@@ -638,7 +639,7 @@ found that weighted positive selection was more robust to the choice of $t$, wit
 $t = 2,3,4$ now giving very similar performances throughout a range of input sizes (Figure~\ref{figurestringdistinction}D).
 
 
-\begin{figure}[h]
+\begin{figure}[t]
   \centering
 	%\includegraphics{figures/figure-string-distinction/plots/analysis.pdf}
    \includegraphics[width=0.47\textwidth]{figures/figure-string-distinction/plots/bitstring-mu-ntrain.pdf}\includegraphics[width=0.47\textwidth]{figures/figure-string-distinction/plots/bitstring-t-n.pdf}
@@ -669,14 +670,14 @@ an extreme example, or does the same apply to real-world datasets?
 
 \subsection{Language anomaly detection}
 
-We therefore revisited the problem of language anomaly detection as 
+We revisited the problem of language anomaly detection as 
 considered previously \cite{Wortel2020t}. In that study, detector populations 
 selected on English strings could detect test strings from ``anomalous`` 
 languages among English strings reasonably well. However, the training sets used were relatively 
 small ($< 1000$ English strings, using contiguous matching with $t=3$) -- small enough 
 that foreign-looking 3-grams are unlikely to appear in the training data. We therefore 
 asked: would the performance 
-of such an (unweighted) AIS degrade as ``unlikely'' letter patterns \emph{do} start to appear
+of such an unweighted AIS degrade as ``unlikely'' letter patterns \emph{do} start to appear
 among English training strings?
 
 To test this hypothesis, we downloaded the published set of strings from \cite{Wortel2020t}, 
@@ -684,7 +685,7 @@ as well as $\sim$800,000 English strings from the King James bible for training.
 From these data, we extracted 3-letter strings, and used our WFSM-AIS to perform both weighted 
 and unweighted positive selection trained on randomly sampled inputs of up to 50,000 English 
  strings. When detecting Latin among English strings, we found that weighted 
-positive selection once again started to outperform
+positive selection outperforms %% once again started to outperform
 its unweighted counterpart at large input sizes (Figure~\ref{figurelang}A,B). 
 
 The input size where unweighted selection starts to perform badly depended on the 
@@ -698,10 +699,10 @@ Similar results were observed when substituting different languages for the
 anomalous strings (Figure~\ref{figurelang}C). The size of the effect depended on the 
 general similarity between English and the ``anomalous'' language considered -- in line
 with the intuition that adding weights should not help learn a difference that is not 
-there (e.g., in the case comparing English versus more English or 
-medieval English).
+there, such as when comparing English to more English. %% (e.g., in the case comparing English versus more English or 
+%% medieval English).
 
-\begin{figure}
+\begin{figure}[t]
   \centering
 	%\includegraphics{figures/figure-string-distinction/plots/analysis.pdf}
    \includegraphics[width=\textwidth]{figures/figure-lang-distinction/plots/all-lang-n.pdf}
@@ -817,10 +818,6 @@ to hopefully have an advantage with such problems.
 
 \subsection{A WFSM-based algorithm for constraint satisfaction problems}
 
-
-
-
-
 The central idea behind our WFSM-based approach is best explained when
 compared to our baseline, the well-known 1+1-EA that uses a population $P=\{x\}$ of size 1. 
 In each step, each letter $x$ is changed to a random other letter with
@@ -860,7 +857,6 @@ with a weight equal to the number of constraints solved.
 Each $L_i$ is preconstructed by taking the complement of the easily
 constructed WFSM that accepts strings that falsify $c_i$.
 
-
 \begin{algorithm}[t]
 \caption{WFSM-based evolutionary algorithm for constraint satisfaction}
 \SetKwProg{generate}{Function \emph{generate}}{}{end}
@@ -893,6 +889,7 @@ $P \gets \biguplus_{i=1}^n \left( L_i \capdot \{s\} \right)$ \\
 output heaviest string in $S$
 \label{algorithmweightedea}
 \end{algorithm}
+
 %% For the farthest string problems outlined in section~\ref{fartheststring},
 %% we take complements of the automata accepting the Hamming ball with radius $k-1$
 %% around each constraint string.
