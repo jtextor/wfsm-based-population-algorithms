@@ -84,7 +84,7 @@ template <class WA>
 WA contiguous(const std::string &word, int d, int cf, int ct) {
     const int l = word.size();
     const int r = 0 <= d ? l - d : -d;
-    d = abs(d);
+    d = l - r;
     const int a = (d + 1)*(r + 1) - 1;
     const int nchars = ct - cf + 1;
     const weight<WA> one = weight<WA>::One();

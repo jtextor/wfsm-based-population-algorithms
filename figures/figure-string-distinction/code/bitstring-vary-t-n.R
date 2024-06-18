@@ -30,7 +30,7 @@ gen <- function( center="00000", N = 10, mut=0.6 ){
 }
 
 dopsel <- function( train, test, thresh = 5 ){
-	command <- paste0( "./possel_train -a binary.txt -l 8 -n ",length(train)," -t ", thresh )
+	command <- paste0( "../../wfsms/targets/ratfa_possel 0 2 ",thresh," ",length(train))
 	read.table(text=system( command, input=c(train,test),intern=TRUE), sep=",")
 }
 

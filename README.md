@@ -5,10 +5,10 @@ Final version of this paper, to be submitted as such before June 22nd.
 TODO:
 - [ ] Replicate all of the results from scratch by `make` invocation
     - [ ] Fig. 2B
-    - [ ] Fig. 3A
-    - [ ] Fig. 3B
-    - [ ] Fig. 3C
-    - [ ] Fig. 3D
+    - [X] Fig. 3A
+    - [X] Fig. 3B
+    - [X] Fig. 3C
+    - [X] Fig. 3D
     - [ ] Fig. 4A
     - [ ] Fig. 4B
     - [ ] Fig. 4C

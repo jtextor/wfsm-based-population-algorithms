@@ -43,9 +43,9 @@ template <> boolfa hamming(const std::string&, int, int, int);
 template <> logfa hamming(const std::string&, int, int, int);
 template <> ratfa hamming(const std::string&, int, int, int);
 
-template <> boolfa insert(const boolfa&, const boolfa&, bool=false);
-template <> logfa insert(const logfa&, const logfa&, bool=false);
-template <> ratfa insert(const ratfa&, const ratfa&, bool=false);
+template <> boolfa insert(const boolfa&, const boolfa&, bool);
+template <> logfa insert(const logfa&, const logfa&, bool);
+template <> ratfa insert(const ratfa&, const ratfa&, bool);
 
 template <> void minimize(boolfa*, bool);
 template <> void minimize(logfa*, bool);

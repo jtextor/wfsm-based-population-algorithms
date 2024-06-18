@@ -133,7 +133,11 @@ template boolfa uplus(const boolfa&, boolfa*, bool);
 template logfa uplus(const logfa&, logfa*, bool);
 template ratfa uplus(const ratfa&, ratfa*, bool);
 
-template boolweight weigh(const boolfa&);
+template <> boolweight weigh(const boolfa &f) {
+    logfa g;
+    fst::ArcMap(f, &g, convert<boolarc, logarc>());
+    return weigh(g).Value();
+}
 template logweight weigh(const logfa&);
 template <>
 ratweight weigh(const ratfa &f) {
