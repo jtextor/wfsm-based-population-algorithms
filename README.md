@@ -9,9 +9,9 @@ TODO:
     - [X] Fig. 3B
     - [X] Fig. 3C
     - [X] Fig. 3D
-    - [ ] Fig. 4A
-    - [ ] Fig. 4B
-    - [ ] Fig. 4C
+    - [X] Fig. 4A
+    - [X] Fig. 4B
+    - [X] Fig. 4C
     - [ ] Fig. 5A
     - [ ] Fig. 5B
     - [ ] Fig. 5C

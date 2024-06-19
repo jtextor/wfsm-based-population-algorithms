@@ -6,14 +6,11 @@ TESTSELF=input/en-unseen.txt
 
 langs=en2 me hi la pd ta xh
 
-all : plots/example-latin.pdf
+all : plots/example-latin.pdf plots/all-lang-n.pdf plots/all-lang-t-n.pdf
 
 
 # unzip
 input/kingjames_5.txt : input/kingjames_5.txt.gz
-	gunzip -k $< 
-
-input/kingjames_5b.txt : input/kingjames_5b.txt.gz
 	gunzip -k $< 
 
 

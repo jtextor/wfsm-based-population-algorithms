@@ -38,7 +38,7 @@ makeTest <- function( strings1, strings2, N ){
 }
 
 dopsel <- function( train, test, thresh = 5, len = l ){
-	command <- paste0( "./possel_train -a lang.txt -l ",len," -n ",length(train)," -t ", thresh )
+	command <- paste0( "../../wfsms/targets/ratfa_possel _ 28 ", thresh, " ", length(train))
 	read.table(text=system( command, input=c(train,test),intern=TRUE), sep=",")
 }
 
