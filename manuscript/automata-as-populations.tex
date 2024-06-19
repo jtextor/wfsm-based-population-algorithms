@@ -37,7 +37,7 @@ weights.  For populations that can be represented as weighted sets of strings,
 WFSMs can reduce memory use and runtime of population-based algorithms by
 orders of magnitude.  We demonstrate the generality of our approach by
 constructing an immune-inspired anomaly detector for string data and an
-evolutionary algorithm that solves constraint satisfaction problems.  The WFSM
+evolutionary algorithm that solves Boolean satisfiability problems.  The WFSM
 approach allows repurposing of advanced algorithms developed for natural
 language processing, and should be applicable to other population-based
 algorithms such as learning classifier systems.
@@ -71,7 +71,7 @@ offer the following contributions:
 \item We present a population compression approach based on weighted FSMs (WFSMs) with rational
 edge weights (Section~\ref{sectionfsms}). This approach allows us to augment the compressed population with important information such as multiplicity or fitness. 
 \item We use WFSMs to implement a weighted versions of positive selection, a key AIS classification algorithm, and show that the addition of weights can lead to higher accuracy and robustness compared to the unweighted baseline (Section~\ref{sectionempirical}).
-\item We use WFSMs to implement an EA that solves the farthest string problem, an NP-hard constraint satisfaction problem (Section~\ref{sectionwaga}).
+\item We use WFSMs to implement an EA that solves the Boolean satisfiability problem (Section~\ref{sectionwaga}).
 %this approach to define weighted versions of positive and negative selection, two of the most important AIS algorithms, and show that the addition of weights can lead to higher accuracy and robustness compared to unweighted baselines (Section~\ref{sectionempirical});
 
 %\item Show how weighted positive and negative selection can be implemented efficiently by using compressed repertoire representations based on weighted FSMs (Section~\ref{sectionfsms});
@@ -731,11 +731,8 @@ suggest that weights will be crucial when applying AISs to real-world datasets.
 We now turn our attention to applying the WFSM approach to a different
 kind of algorithm.
 We design a simple EA that we apply to solve
-constraint satisfaction problems.
+Boolean satisfiability problems.
 
-%% The Boolean satisfiability problem is to decide whether a given
-%% formula in propositional logic has a truth assignment over its
-%% variables such that the formula is satisfied.
 %% %% These problems were the first to be proven NP-complete.
 %% Any such formula can be quickly transformed to an equisatisfiable
 %% formula in \emph{conjunctive normal form} with three variables per clause.
@@ -749,22 +746,42 @@ constraint satisfaction problems.
 %% clause,
 %% seven do satisfy that same clause and one does not.
 
-We define a constraint satisfaction problem as a set of $n$ clauses
-over a set of $\ell$ variables.
-Each clause is a set of \emph{literals},
-where each literal is some integer in
-$1, \ldots, \ell$ or $-1, \ldots, -\ell$.
+The Boolean satisfiability problem is to decide whether a given
+Boolean formula has a truth assignment over its
+variables such that the formula is satisfied.
+For our purposes,
+we define these problems as a set of $n$ \emph{clauses},
+where each clause is a set of \emph{literals},
+with literals being integers in $1, \ldots, \ell$ or
+$-1, \ldots,-\ell$.
+%% ,
+%% corresponding respectively to nonnegated and negated occurences of \emph{variables}
+%% $1, \ldots, \ell$.
 A \emph{truth assignment} $x$ is a string in $\{0,1\}^\ell$.
-Such an $x$ \emph{satisfies} a clause $c$ when there is a positive $l$
-or negative $m$ in $c$, such that $x_l=1$ or $x_m=0$.
+Such an $x$ \emph{satisfies} a clause $c$ when there is some literal $l$
+in $c$, such that $x_{|l|}$ is $1$ if $l$ is positive and $0$ if negative.
 Otherwise, the clause is \emph{falsified}.
-A problem is \emph{satisfiable} when there is some truth assignment that
-satisfies all of its clauses.
+If there is an $x$ that satisfies all of a problem's clauses,
+then the problem is \emph{satisfiable}.
 
-In order to find a witness for the satisfiability of a given problem,
-we can run an EA over strings over the binary alphabet,
+%% A constraint satisfaction problem is to find,
+%% given a Boolean formula in conjunctive normal form over a set of
+%% variables $V = \{ v_1, \ldots, v_\ell \}$,
+%% a \textit{truth assignment} $t : V \mapsto \{\top,\bot\}$ that satisfies
+%% the formula.
+%% For example,
+%% $(v_1 \lor \overline{v_2}) \land v_2$ is such a formula over
+%% $V=\{v_1,v_2\}$ and the only truth assignment that satisfies it is
+%% $t(\cdot)=\top$.
+%% We model truth assignments with strings over $\Sigma=\{\bot, \top\}$
+%% by corresponding to each string $x$ in $\Sigma^\ell$ a truth
+%% assignment $t_x(v_i) = x_i$, i.e., the $i$th letter in $x$ is the value for the $i$th variable of the problem.
+
+Provided a satisfiable problem,
+a witness to its satisfiability may be found by running an EA over
+truth assignments,
 using the number of satisfied clauses as fitness function.
-An EA should find this witness eventually,
+An EA should find a witness eventually,
 but for some problems this can take exceedingly long.
 The next section explains how we construct a WFSM-based EA
 to hopefully have an advantage with such problems.
@@ -816,7 +833,7 @@ to hopefully have an advantage with such problems.
 %% It can be verified that a binary string $s^*$ with $d_H( s^*, s_i ) \geq \ell-2$ for all $i$ encodes a 
 %% satisfying assignment of the input formula \cite{KevinLanctot2003}.
 
-\subsection{A WFSM-based algorithm for constraint satisfaction problems}
+\subsection{A WFSM-based algorithm for Boolean satisfiability problems}
 
 The central idea behind our WFSM-based approach is best explained when
 compared to our baseline, the well-known 1+1-EA that uses a population $P=\{x\}$ of size 1. 
@@ -838,9 +855,9 @@ by constructing \emph{Hamming balls} centered at a given candidate solution and 
 %% quickly leap across valleys separating local minima. 
 
 This joint evaluation proceeds as follows.
-For each constraint $c_i$ for $i \in \{1, \ldots, n\}$ we preconstruct
+For each clause $c_i$ for $i \in \{1, \ldots, n\}$ we preconstruct
 a WFSM $L_i$ that accepts local solutions:
-all strings that satisfy the corresponding constraint with unit weights.
+all strings that satisfy the corresponding clause with unit weights.
 %% \footnote{
 %% Given this supposition, there is a more direct solve.
 %% Any $s^*$ is in $\bigcap_{i=1}^n L_i$ if and only if it solves
@@ -852,22 +869,22 @@ all strings that satisfy the corresponding constraint with unit weights.
 %% }
 Then \mbox{$\biguplus_{i=1}^n (L_i \capdot B)$}, with $B$ being our Hamming ball,
 results in a WFSM that contains all strings in $B$ solving at
-least one constraint,
-with a weight equal to the number of constraints solved.
+least one clause,
+with a weight equal to the number of clauses solved.
 Each $L_i$ is preconstructed by taking the complement of the easily
 constructed WFSM that accepts strings that falsify $c_i$.
 
 \begin{algorithm}[t]
-\caption{WFSM-based evolutionary algorithm for constraint satisfaction}
+\caption{WFSM-based evolutionary algorithm for Boolean satisfiability}
 \SetKwProg{generate}{Function \emph{generate}}{}{end}
 \SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
 
 \Input{
-  Constraints $c_1, \ldots, c_n$, Hamming radius $r$, 
+  Clauses $c_1, \ldots, c_n$, Hamming radius $r$, 
   pruning fraction $p$. \\
 }
 
-\Output{A string satisfying all constraints.}
+\Output{A string satisfying all clauses.}
 
 %$L_1, \ldots, L_n \gets$ set of strings that satisfy $c_1, \ldots, c_n$ \\
 \For{$i \in 1, \ldots, n$}{ 
@@ -886,7 +903,7 @@ $P \gets \biguplus_{i=1}^n \left( L_i \capdot \{s\} \right)$ \\
   $P \gets (P \setminus E) \uplus E$ \\
   $P \gets \text{prune}(P, p)$
 }
-output heaviest string in $S$
+output heaviest string in $P$
 \label{algorithmweightedea}
 \end{algorithm}
 
@@ -925,15 +942,15 @@ algorithm is not fixed.
     Algorithm~\ref{algorithmweightedea}'s population expands out of local optima.
     (A)
     Algorithm~\ref{algorithmweightedea} ($r=3$, $p=0.99$) and a
-    1+1-EA ($p_m = 0.02$) running on four constraint satisfaction problems.
+    1+1-EA ($p_m = 0.02$) running on four Boolean satisfiability problems.
     Jitter is added in the y direction and the y-axis is interrupted
-    at 210 constraints.
+    at 210 clauses.
 %%      Both get stuck, but Algorithm~\ref{algorithmweightedea}
 %%      occasionally gets unstuck.
     The diamond in the top right indicates a run for which in
     (B)
     population size is shown.
-    Vertical dotted lines indicate when more constraints are solved.
+    Vertical dotted lines indicate when more clauses are satisfied.
     (C)
     Cumulative number of fitness evaluations for runs in the rightmost subplot of (A),
     counting two evaluations of the same string twice.
@@ -954,13 +971,13 @@ We expected such problems to have a \emph{glassy} solution landscape
 such a landscape might benefit from Algorithm~\ref{algorithmweightedea}'s
 ability to support large population sizes.
 
-We selected four satisfiable problems with 50 variables and 218 constraints
+We selected four satisfiable problems with 50 variables and 218 clauses
 at random from the ``Uniform Random-3-SAT'' collection to run our EAs on.
 We performed six runs of both EAs on each problem,
 cutting them short if no solution is found in ten minutes.
 %
 Algorithm~\ref{algorithmweightedea} and the 1+1-EA both find strings
-that solve at least 210 of the constraints within seconds
+that solve at least 210 of the clauses within seconds
 (Figure~\ref{satsolving}A).
 In all runs,
 1+1-EA gets stuck in a local optimum after these first seconds.
@@ -970,7 +987,7 @@ quickly.
 When Algorithm~\ref{algorithmweightedea} finds a new optimum,
 its population size falls (Figure~\ref{satsolving}B),
 because the pruning step removes strings that solve too few
-constraints with respect to the newly found best string.
+clause with respect to the newly found best string.
 During a stall, the population grows,
 building up an increasingly large repository of high fitness strings
 from which to expand further.
