@@ -6,8 +6,8 @@ TESTSELF=input/en-unseen.txt
 
 langs=en2 me hi la pd ta xh
 
-all : plots/example-latin.pdf plots/all-lang-n.pdf plots/all-lang-t-n.pdf
-
+all : plots/fig4.pdf
+#all : plots/example-latin.pdf plots/all-lang-n.pdf
 
 # unzip
 input/kingjames_5.txt : input/kingjames_5.txt.gz
@@ -22,6 +22,8 @@ plots/example-latin.pdf : code/plot-lang-vary-t-n.R data/lang-la-t-n.rds | plots
 #	Rscript $< $(TRAINFILE) $(TESTSELF) input/la-unseen.txt la $@
 
 
+plots/fig4.pdf : code/plot.R all-langs
+	Rscript $< data/lang-XX-t-n.rds 'en2 me hi la pd ta xh' data/lang-la-t-n.rds $@
 
 # deltaAUC for different languages
 all-langs : $(foreach l, $(langs), data/lang-$(l)-t-n.rds )

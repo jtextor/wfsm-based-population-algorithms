@@ -101,6 +101,6 @@ p2 <- ggplot( un, aes( x = ntrain, y = mu_auc, group = thresh ) ) +
 		legend.position = "none"
 	)
 
-p <- p1 + p2 + plot_annotation(tag_levels = 'A') 
+p <- (p1 / p2) + plot_annotation(tag_levels = 'A') 
 
-ggsave(p, file = outplot, width = 8, height = 3.5, units = "cm", useDingbats = FALSE )
+ggsave(p, file = outplot, width = 1.21, height = 2.8, units = "in", useDingbats = FALSE, family=textfam, pointsize=textsize, dpi=1200, bg="transparent", useKerning=T )

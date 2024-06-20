@@ -21,8 +21,6 @@ data1b <- data1 %>% group_by( lang,ntrain, thresh, fsa ) %>%
 	summarise( mu_auc = mean(auc), se_auc = sem( auc ) ) %>%
 	mutate( tname = paste0( "latin, t = ", thresh ))
 
-
-	
 p <- ggplot( data1b, aes( x = ntrain, y = mu_auc, group = fsa, color = fsa, fill = fsa ) ) +
 	geom_ribbon( aes( ymin = mu_auc - se_auc, ymax = mu_auc + se_auc ), alpha = 0.1, color = NA ) +
 	geom_line() +
@@ -40,5 +38,4 @@ p <- ggplot( data1b, aes( x = ntrain, y = mu_auc, group = fsa, color = fsa, fill
  		legend.justification = c(0,1)
  	)
 
-
-ggsave(p, file = outplot, width = 8, height = 3.5, units = "cm", useDingbats = FALSE )
+ggsave(p, file = outplot, width = 1.21, height = 1.4, units = "in", useDingbats = FALSE, family=textfam, pointsize=textsize, dpi=1200, bg="transparent", useKerning=T )

@@ -56,7 +56,7 @@ p5 <- plotLang( "ta", "English-\nTagalog" )
 p4 <- plotLang( "hi", "English-\nHiligaynon")
 p6 <- plotLang( "xh", "English-\nXhosa" )
 
-p <- ( p1 + p2 ) / (p3 +p4 ) / (p5 + p6)
+p <- ( p1 + p2 + p3) / (p4 + p5 + p6)
 
 
-ggsave(p, file = outplot, width = 8, height = 10, units = "cm", useDingbats = FALSE )
+ggsave(p, file = outplot, width = 4.7, height = 2.8, units = "in", useDingbats = FALSE, dpi = 1200, bg="transparent", family=textfam, pointsize=textsize, useKerning=T )
