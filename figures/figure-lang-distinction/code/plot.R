@@ -37,19 +37,20 @@ data1sum <- data1 %>% group_by( lang, ntrain, thresh, fsa ) %>%
 
 plotLeft <- function( data ) {
     summarized <- data %>% group_by( lang,ntrain, thresh, fsa ) %>% 
-	summarise( mu_auc = mean(auc), se_auc = sem( auc ) ) %>%
-	mutate( tname = paste0( "latin, t = ", thresh ))
+	summarise( mu_auc = mean(auc), se_auc = sem( auc ) )
+	tname <- paste0( "Latin, t = ", data$thresh[1] )
 
     ggplot(summarized, aes( x = ntrain, y = mu_auc, group = fsa, color = fsa, fill = fsa ) ) +
 	geom_ribbon( aes( ymin = mu_auc - se_auc, ymax = mu_auc + se_auc ), alpha = 0.1, color = NA ) +
 	geom_line() +
 	scale_x_log10(breaks=c(1e1, 1e2, 1e3, 1e4), labels=c(expression(10^1), expression(10^2), expression(10^3), expression(10^4))) +
-	scale_y_continuous( limits =c(0.49,0.9), expand = c(0,0) ) +
 	labs( x = "# training strings", y = "AUC" ) +
 	scale_color_manual( values = colorMap ) +
 	scale_fill_manual( values = colorMap ) +
+	annotate( "text", x = 4, y = 0.93, label = tname, hjust = 0, vjust = 1, size = 0.6*ggtextsize ) +
+    coord_cartesian(xlim = c(3, 10000), ylim=c(0.5, 0.9), expand=F, clip="off") +
 	#facet_wrap( ~tname ) +
-	mytheme 
+	mytheme #+ theme(legend.text=element_text(size=0.55*textsize))
 }
 
 noLegend <- function() {
@@ -57,7 +58,10 @@ noLegend <- function() {
 }
 
 withLegend <- function() {
-	 theme(legend.position = c(-0.1,1.25), legend.justification = c(0,1))
+	 theme(
+        legend.position = c(-0.1,1.2),
+        legend.justification = c(0,1)
+     )
 }
 
 plotLang <- function( l, lname ){
@@ -66,11 +70,11 @@ plotLang <- function( l, lname ){
 	geom_ribbon( aes( ymin = mu_auc - se_auc, ymax = mu_auc + se_auc ), alpha = 0.2, color = NA ) +
 	geom_line() +
 	scale_x_log10(breaks=c(1e1, 1e2, 1e3, 1e4), labels=c(expression(10^1), expression(10^2), expression(10^3), expression(10^4))) +
-	scale_y_continuous( limits =c(0.49,0.9), expand = c(0,0) ) +
-	annotate( "text", x = 2, y = 0.9, label = lname, hjust = 0, vjust = 1, size = 0.69*ggtextsize ) +
+	annotate( "text", x = 4, y = 0.9, label = lname, hjust = 0, vjust = 1, size = 0.55*ggtextsize ) +
 	labs( x = "# training strings", y = "AUC" ) +
 	scale_color_manual( values = colorMap ) +
 	scale_fill_manual( values = colorMap ) +
+    coord_cartesian(xlim = c(3, 10000), ylim=c(0.5, 0.9), expand=F) +
 	#facet_wrap( ~lang, ncol = 3, scales="free" ) +
 	mytheme + 
 	theme(
