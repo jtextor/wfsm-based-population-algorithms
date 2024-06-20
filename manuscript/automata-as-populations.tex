@@ -345,12 +345,12 @@ using a simple task.
     Exact arithmetic helps keeping WFSMs small.
     (A) Weighted union between two WFSMs, using exact and inexact arithmetic.
     With exact arithmetic the path weight for $bb$ is $\frac{1}{7} \times 7=1$,
-    which can be merged with $ab$'s path weight of $1$ to obtain a small WFSM.
+    which can be merged with $ab$'s path weight of $1$ to obtain a small WFSM (bottom left, blue).
     However, with inexact arithmetic this weight becomes $0.14 \times 7=0.98$,
-    which cannot be merged like before, leading to a larger WFSM.
+    which cannot be merged like before, leading to a larger WFSM (bottom right, red).
     (B) A (W)FSM accepting $\{0,1,2\}^6$ is constructed by successive
     union of single-string (W)FSMs in a binary tree recursion.
-    With unweighted FSMs, strong compression is achieved by minimization.
+    With unweighted FSMs, compression is achieved by minimization.
     With WFSMs with float weights, inaccuracies accumulate and prevent states 
     from being merged (red line).
     Exact rational artihmetic rescues the desired behavior (blue line).
