@@ -1,7 +1,7 @@
 library( ggplot2, warn.conflicts = FALSE )
 
 textfam <- "sans"
-textsize <- 7
+textsize <- 5
 ggtextsize <- textsize * (7/15)
 
 mytheme <-  theme_classic() +

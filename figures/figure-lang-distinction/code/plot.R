@@ -43,7 +43,6 @@ plotLeft <- function( data ) {
     ggplot(summarized, aes( x = ntrain, y = mu_auc, group = fsa, color = fsa, fill = fsa ) ) +
 	geom_ribbon( aes( ymin = mu_auc - se_auc, ymax = mu_auc + se_auc ), alpha = 0.1, color = NA ) +
 	geom_line() +
-	#geom_textline( aes( label = fsa ), size = 0.6* ggtextsize, hjust = 0.93 ) +
 	scale_x_log10(breaks=c(1e1, 1e2, 1e3, 1e4), labels=c(expression(10^1), expression(10^2), expression(10^3), expression(10^4))) +
 	scale_y_continuous( limits =c(0.49,0.9), expand = c(0,0) ) +
 	labs( x = "# training strings", y = "AUC" ) +
@@ -58,7 +57,7 @@ noLegend <- function() {
 }
 
 withLegend <- function() {
-	 theme(legend.position = c(0,1), legend.justification = c(0,1))
+	 theme(legend.position = c(-0.1,1.25), legend.justification = c(0,1))
 }
 
 plotLang <- function( l, lname ){
@@ -96,4 +95,4 @@ plb <- plotLeft( dataleft3 ) + noLegend()
 
 p <- wrap_plots(list(plt,p1,p2,p3,plb,p4,p5,p6), ncol=4, byrow=T) + plot_annotation(tag_levels=list(c("A", "C", "", "", "B", "", "", "")))
 
-ggsave(p, file = outplot, width = 4.7, height = 2.8, units = "in", useDingbats = FALSE, dpi = 1200, bg="transparent", family=textfam, pointsize=textsize, useKerning=T )
+ggsave(p, file = outplot, width = 3.1, height = 1.6, units = "in", useDingbats = FALSE, dpi = 1200, bg="transparent", family=textfam, pointsize=textsize, useKerning=T )
