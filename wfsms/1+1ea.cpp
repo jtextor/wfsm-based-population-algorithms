@@ -40,7 +40,7 @@ static u64 clause_random_satisfying_model(const clause &c) {
     u64 result;
     do {
         result = random_model();
-    } while (!clause_eval(c, result)); // This averages 0.14 repetitions.
+    } while (!clause_eval(c, result)); // This averages 8/7 repetitions.
     return result;
 }
 

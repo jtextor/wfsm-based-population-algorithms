@@ -1,14 +1,16 @@
 #include <algorithm>
 #include <cassert>
+#include <cstdio>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
 #include <random>
 
-#include "wfsms_fwd.hpp"
+#include "dimacs.hpp"
 #include "sat.hpp"
 #include "termiter.hpp"
 #include "trim.hpp"
+#include "wfsms_fwd.hpp"
 
 
 static constexpr float nearly_one = 1 - 1e-3;
@@ -19,6 +21,7 @@ static std::ofstream fout;
 
 static ratfa eval(const std::vector<ratfa> &problem, const ratfa &f) {
     std::vector<ratfa> result;
+    result.reserve(problem.size());
     std::transform(begin(problem), end(problem), std::back_inserter(result),
         [&](const ratfa &p) -> ratfa { return capdot(p, f); });
 
@@ -31,33 +34,11 @@ static term fittest(const ratfa &f) {
     return *begin(g);
 }
 
-static std::vector<ratfa> read_csv(std::istream &csv) {
+static std::vector<ratfa> precompute(const csp &cnf) {
     std::vector<ratfa> result;
-    std::string line;
-    std::getline(csv, line);
-    if (!csv) {
-        std::cerr << "Cannot find problem CSV header line." << std::endl;
-        std::abort();
-    }
-    trim(line);
-    if (line != "type,string") {
-        std::cerr << "Expected problem CSV to have fields 'type' and 'string' in that order." << std::endl;
-        std::abort();
-    }
-    while (std::getline(csv, line)) {
-        trim(line);
-        std::string type = line.substr(0, 2);
-        std::string string = line.substr(2);
-        if (type[1] != ',') {
-            std::cerr << "Expected type field to be '1', '2', or '3'" << std::endl;
-            std::abort();
-        }
-        if (type[0] == '1') {
-            result.push_back(satisfy(string));
-        } else if (!(type[0] == '2' || type[0] == '3')) {
-            std::cerr << "Expected type field to be '1', '2', or '3'" << std::endl;
-            std::abort();
-        }
+    result.reserve(cnf.clauses.size());
+    for (const auto &clause : cnf.clauses) {
+        result.push_back(satisfy(clause, cnf.nvars));
     }
     return result;
 }
@@ -109,14 +90,14 @@ int main(int argc, char **argv) {
         return 1;
     }
     if (6 != argc) {
-        std::cerr << "usage: waga <problem csv> <max user seconds> <radius> <prunefract> <outcsv>" << std::endl;
+        std::cerr << "usage: waga <problem cnf> <max user seconds> <radius> <prunefract> <outcsv>" << std::endl;
         return 1;
     }
     std::ifstream fprob(argv[1]);
     max_user_seconds = std::stoi(argv[2]);
     int radius = std::stoi(argv[3]);
     float prunefract = std::stof(argv[4]);
-    problem = read_csv(fprob);
+    problem = precompute(read_cnf(fprob));
     fprob.close();
     fout.open(argv[5], std::ios::out);
 

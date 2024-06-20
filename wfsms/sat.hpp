@@ -27,10 +27,10 @@
 
 /* Construct FSA containing all variable assignments that satisfy the
  * clause encoded by the input string. */
-ratfa satisfy(const std::string&);
+ratfa satisfy(const std::vector<int>&, int);
 
 /* Construct FSA containing all variable assignments that falsify the
  * clause encoded by the input string. */
-ratfa falsify(const std::string&);
+ratfa falsify(const std::vector<int>&, int);
 
 #endif /* !defined(SAT_HPP) */

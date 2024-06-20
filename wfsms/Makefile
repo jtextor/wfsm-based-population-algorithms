@@ -5,7 +5,7 @@ OBJECT_DIR := objects
 TARGET_DIR := targets
 
 WA_LIB_NAMES := termiter sat wfsms rational_weight safe_integer
-WA_TARGET_NAMES := algorithm2 ratfa_learn ratfa_classify # boolfa_learn boolfa_classify
+WA_TARGET_NAMES := boolfa_possel ratfa_possel ratfa_learn ratfa_classify algorithm2 solve
 OTHER_TARGET_NAMES := 1+1ea
 
 TARGET_NAMES := $(WA_TARGET_NAMES) $(OTHER_TARGET_NAMES)
@@ -42,13 +42,22 @@ distclean: clean
 
 .PHONY: clean distclean
 
+$(TARGET_DIR)/boolfa_possel: $(BOOLFA_POSSEL_OBJECTS) $(OBJECT_DIR)/boolfa_possel.o | $(TARGET_DIR)
+	$(CXX) -std=c++1z -o $@ $^ -lfst
+
+$(TARGET_DIR)/ratfa_possel: $(RATFA_POSSEL_OBJECTS) $(OBJECT_DIR)/ratfa_possel.o | $(TARGET_DIR)
+	$(CXX) -std=c++1z -o $@ $^ -lfst
+
 $(TARGET_DIR)/ratfa_classify: $(RATFA_CLASSIFY_OBJECTS) $(OBJECT_DIR)/ratfa_classify.o | $(TARGET_DIR)
 	$(CXX) -std=c++1z -o $@ $^ -lfst
 
 $(TARGET_DIR)/ratfa_learn: $(RATFA_LEARN_OBJECTS) $(OBJECT_DIR)/ratfa_learn.o | $(TARGET_DIR)
 	$(CXX) -std=c++1z -o $@ $^ -lfst
 
-$(TARGET_DIR)/algorithm2: $(ALGORITHM2_OBJECTS) $(OBJECT_DIR)/algorithm2.o | $(TARGET_DIR)
+$(TARGET_DIR)/algorithm2: $(ALGORITHM2_OBJECTS) $(OBJECT_DIR)/dimacs.o $(OBJECT_DIR)/algorithm2.o | $(TARGET_DIR)
+	$(CXX) -std=c++1z -o $@ $^ -lfst
+
+$(TARGET_DIR)/solve: $(SOLVE_OBJECTS) $(OBJECT_DIR)/dimacs.o $(OBJECT_DIR)/solve.o | $(TARGET_DIR)
 	$(CXX) -std=c++1z -o $@ $^ -lfst
 
 $(TARGET_DIR)/1+1ea: 1+1ea.cpp | trim.hpp $(TARGET_DIR)

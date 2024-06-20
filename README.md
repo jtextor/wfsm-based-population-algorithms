@@ -12,9 +12,9 @@ TODO:
     - [X] Fig. 4A
     - [X] Fig. 4B
     - [X] Fig. 4C
-    - [ ] Fig. 5A
-    - [ ] Fig. 5B
-    - [ ] Fig. 5C
+    - [X] Fig. 5A
+    - [X] Fig. 5B
+    - [X] Fig. 5C
 - [X] Acknowledge Vidi grant and disclose interest
 - [ ] License-to-publish agreement
 - [X] Page numbers?
@@ -27,9 +27,9 @@ TODO:
 - [X] Address definition 1: r-Hamming matching
 - [X] Address complaint that symbols are used before their definition
 - [ ] Fix typoes
-- [ ] Let `waga` and `1+1ea` read and convert a DIMACS file for CNF problems instead 
+- [X] Let `waga` and `1+1ea` read and convert a DIMACS file for CNF problems instead 
 - [ ] Improve fig. 2 clarity somehow, addressing a complaint
-- [ ] Improve fig. 5 look; smaller dots and adjust linesize
+- [X] Improve fig. 5 look; smaller dots and adjust linesize
 - [ ] Add r-contiguous automaton illustration
 - [ ] Add scaling wrt naive implementation result
 - [X] Address complaint of large figure causing PDF to render slowly

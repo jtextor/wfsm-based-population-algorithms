@@ -931,11 +931,11 @@ algorithm is not fixed.
   \renewcommand{\arraystretch}{0.0}
   \begin{tabular}{p{5pt}@{}cp{5pt}@{}c}
     \raisebox{-\height}{A} & %
-    \multicolumn{3}{c}{\raisebox{-\height}{\includegraphics{figures/figure-genetic-algorithms/constraints-over-time.pdf}}} \\
+    \multicolumn{3}{c}{\raisebox{-\height}{\includegraphics{figures/figure-genetic-algorithms/plots/constraints-over-time.pdf}}} \\
     \raisebox{-\height}{B} & %
-    \raisebox{-\height}{\includegraphics{figures/figure-genetic-algorithms/populationsize-over-time.pdf}} & %
+    \raisebox{-\height}{\includegraphics{figures/figure-genetic-algorithms/plots/populationsize-over-time.pdf}} & %
       \raisebox{-\height}{C} & %
-      \raisebox{-\height}{\includegraphics{figures/figure-genetic-algorithms/evaluations-over-time.pdf}}
+      \raisebox{-\height}{\includegraphics{figures/figure-genetic-algorithms/plots/evaluations-over-time.pdf}}
   \end{tabular}
   \endgroup
   \caption{
@@ -945,8 +945,6 @@ algorithm is not fixed.
     1+1-EA ($p_m = 0.02$) running on four Boolean satisfiability problems.
     Jitter is added in the y direction and the y-axis is interrupted
     at 210 clauses.
-%%      Both get stuck, but Algorithm~\ref{algorithmweightedea}
-%%      occasionally gets unstuck.
     The diamond in the top right indicates a run for which in
     (B)
     population size is shown.
@@ -961,8 +959,7 @@ algorithm is not fixed.
 
 We obtained a collection of difficult satisfiability problems by
 downloading a collection from SATLIB called ``Uniform Random-3-SAT''
-\cite{Hoos2000}. %% and encoded these as farthest string problems,
-%% using the technique outlined in section~\ref{fartheststring}.
+\cite{Hoos2000}.
 This collection consists of randomly generated
 problems with a fixed number of clauses and variables 
 that are unusually difficult to solve \cite{Cheeseman1991,mitchell1992}.
