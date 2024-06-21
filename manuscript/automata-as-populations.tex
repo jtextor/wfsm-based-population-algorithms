@@ -13,11 +13,16 @@
 
 \title{Population-Based Algorithms \\
  Built on Weighted Automata}
-%% \title{Automata as compressed populations}
+%
+\titlerunning{Automata as compressed populations}
 %% \titlerunning{}
 
-\author{Gijs Schr\"oder\orcidID{0000-0001-6803-3237} \and \\ Inge Wortel\orcidID{0000-0003-3362-5229}  \and Johannes Textor\orcidID{0000-0002-0459-9458}}
-\institute{Radboud University \and \email{\{gijs.schroeder,inge.wortel,johannes.textor\}@ru.nl} }
+\author{Gijs Schr\"oder\inst{1}\orcidID{0000-0001-6803-3237} \and Inge Wortel\inst{1}\orcidID{0000-0003-3362-5229}  \and Johannes~Textor\inst{1}\orcidID{0000-0002-0459-9458}}
+
+\institute{Institute for Computing and Information Sciences, \\ Radboud University, 
+Nijmegen, The Netherlands \\ \email{\{gijs.schroeder,inge.wortel,johannes.textor\}@ru.nl} }
+
+\authorrunning{G. Schr\"oder et al.}
 %\and \email{inge.wortel@ru.nl} \and \email{johannes.textor@ru.nl}}
 
 \begin{document}
@@ -51,26 +56,20 @@ algorithms such as learning classifier systems.
 Many algorithms in computer science perform a search, optimization, or learning procedure by maintaining and evolving a set of points in some kind of search space. Such \emph{population-based} algorithms \cite{Blum_2003} encompass nature-inspired metaheuristics like evolutionary algorithms (EAs) \cite{Jansen2013}, ant colony optimization \cite{Blum2005}, particle swarm optimization \cite{Gad2022}, and artificial immune systems \cite{Timmis2004}, but are not only used in natural computing: various more classical algorithms such as the approximate Bayesian computation method for parameter inference \cite{Sisson2007} %% , Markov Chain Monte Carlo methods,
 or simulated annealing can also be viewed as population-based.
 
-This paper focuses on populations that can be represented as sets of strings with associated weights, such as, for instance, EAs with real-valued fitness functions. We ask a simple question: how can we efficiently implement such algorithms when the population sizes are very large -- say, in the millions? While small populations are fine in some cases (even a simple 1+1-EA  successfully solves many problems), large populations can be required to tackle complex, high-dimensional problems in many areas, such as anomaly detection by immune-inspired classifier systems. 
+This paper focuses on populations that can be represented as sets of strings with associated weights, such as, for instance, EAs with real-valued fitness functions. We ask a simple question: how can we efficiently implement such algorithms when the population sizes are very large -- say, in the millions? While small populations are fine in some cases (even a simple 1+1-EA  successfully solves many problems), large populations can be required to tackle complex, high-dimensional problems in many areas, such as anomaly detection by immune-inspired classifier systems \cite{Stibor2005}. 
 
 An obvious approach to deal with large populations is parallelization, which is typically straightforward and achieves linear runtime improvement. Here we use a different approach that has been much less explored: \emph{population compression}. While being more difficult to implement, it can, in some cases, achieve superlinear or even exponential gains \cite{Liskiewicz2010}. To our knowledge, the idea of population compression first appeared in the field of artificial immune systems (AIS) \cite{Elberfeld_2009}, where it was used to build the first polynomial-time immune-inspired classification algorithms, a feat that had previously been considered unachievable as it was thought to be an NP-hard problem \cite{Timmis2008}. In these algorithms, population compression is achieved by representing the ``detectors'' comprising the population -- which are simply strings -- as a finite state machine (FSM). For large string sets with regular structure, FSMs can be exponentially smaller than an explicit list of the population. Recently, the FSM approach was used to build a computational model of T~cell populations in the human immune system that contained tens of millions of ``detectors'' and processed the entire human proteome as input \cite{Wortel2020t}. 
 
-It is not straightforward to use FSM-based population compression methods in other
-population-based algorithms as existing methods are still relatively limited. 
-Crucially, FSMs represent populations as sets without multiplicity. 
-This means that all individuals in the population are qualitatively equal,  
-limiting the types of operations that can be performed on them. For instance, 
-in a algorithm, we may wish to sample new candidates for reproduction in a manner that takes the fitness into account; this kind of operation is not 
-supported by existing FSM-based approaches.
+It is not straightforward to use FSM-based population compression methods in other population-based algorithms as existing methods are still relatively limited. Crucially, FSMs represent populations as sets without multiplicity. This means that all individuals in the population are qualitatively equal, limiting the types of operations that can be performed on them. For instance, in an EA, we may wish to sample new candidates for reproduction in a fitness-dependent manner; this kind of operation is not supported by existing FSM-based approaches.
 
 In this paper, we will extend population compression methods developed for AIS in a manner
 that makes them useable for more general population-based algorithms. Specifically, we 
 offer the following contributions: 
 
 \begin{enumerate}
-\item We present a population compression approach based on weighted FSMs (WFSMs) with rational
+\item We present a population compression approach based on \emph{weighted} FSMs (WFSMs) with rational
 edge weights (Section~\ref{sectionfsms}). This approach allows us to augment the compressed population with important information such as multiplicity or fitness. 
-\item We use WFSMs to implement a weighted versions of positive selection, a key AIS classification algorithm, and show that the addition of weights can lead to higher accuracy and robustness compared to the unweighted baseline (Section~\ref{sectionempirical}).
+\item We use WFSMs to implement a weighted version of positive selection, a key AIS classification algorithm, and show that the addition of weights can lead to higher accuracy and robustness compared to the unweighted baseline (Section~\ref{sectionempirical}).
 \item We use WFSMs to implement an EA that solves the Boolean satisfiability problem (Section~\ref{sectionwaga}).
 %this approach to define weighted versions of positive and negative selection, two of the most important AIS algorithms, and show that the addition of weights can lead to higher accuracy and robustness compared to unweighted baselines (Section~\ref{sectionempirical});
 
@@ -79,7 +78,7 @@ edge weights (Section~\ref{sectionfsms}). This approach allows us to augment the
 \end{enumerate}
 
 
-We have implemented our WFSM-based algorithms in C++, making heavy use of the library OpenFST \cite{openfst}. Upon acceptance of this manuscript, we will publicly release our code as open source software. % for review purposes, we attach the implementation as supplementary information.
+We have implemented our WFSM-based algorithms in C++, making heavy use of the library OpenFST \cite{openfst}. Our code is available for download at \url{}.
 
 \section{Background}
 
@@ -103,7 +102,8 @@ Weights in the interval $(0,1]$ could represent probabilities of being present i
 
 In the following, let $(S, w_S)$, $(T, w_T)$, and $(U, w_U)$ each be weighted populations.
 For simplicity, let $w_A(x)=0$ if $x \notin A$ and let $f = g \star h$ denote $f(x) = g(x) \star h(x)$, where $\star$ is any operation.
-We define three binary operations over populations:
+In a slight abuse of notation, we define three binary operations for two populations $(S, w_S)$ (abbreviated as $S$) and
+$(T, w_T)$ (abbreviated as $T$):
 
 $S \uplus T = U$ is the \emph{sum} of $S$ and $T$, where $U = S \cup T$ and $w_U = w_S + w_T$.
 
@@ -191,7 +191,7 @@ that are based on populations of so-called
 \emph{detectors},
 %% (also called patterns)
 where each detector is a string that represents
-a small part of a set $\mathcal{U}$ of objects to classify -- also called universe. By extension, detector populations can therefore 
+a small part of a set $\mathcal{U}$ (universe) of objects to classify. By extension, detector populations can therefore 
 represent  (``cover'') subsets of $\mathcal{U}$. Although this framework is general and allows 
 $\mathcal{U}$ to be any set, in this paper we focus on strings over some alphabet 
 $\Sigma$, where each string consists of $\ell$ characters ($\mathcal{U}=\Sigma^\ell$).
@@ -199,7 +199,7 @@ $\Sigma$, where each string consists of $\ell$ characters ($\mathcal{U}=\Sigma^\
 % since the generalization of our framework to variable-length 
 %strings is reasonably straightforward. 
 
-In addition to the \emph{universe}: $\mathcal{U}$ that represents the objects to be classified, we define a set of \emph{detectors} $\mathcal{D}$; possibly $\mathcal{U}=\mathcal{D}$. A \emph{matching function} $m : \mathcal{D} \mapsto 2^\mathcal{U}$, where $2^\mathcal{U}$ denotes the powerset of $\mathcal{U}$, associates every detector with the elements it recognizes. In a slight abuse of notation, we define the inverse matching function $m^{-1} : \mathcal{U} \mapsto 2^\mathcal{D}$ as $m^{-1}(x) = \{ d \in \mathcal{D} \mid x \in m(d) \} $. In this setting, a population is simply a subset of $\mathcal{D}$. 
+In addition to the \emph{universe}: $\mathcal{U}$ that represents the objects to be classified, we define a set of \emph{detectors} $\mathcal{D}$; possibly $\mathcal{U}=\mathcal{D}$. A \emph{matching function} $m : \mathcal{D} \mapsto 2^\mathcal{U}$, where $2^\mathcal{U}$ denotes the powerset of $\mathcal{U}$, associates every detector with the elements it recognizes. We define the inverse matching function $m^{-1} : \mathcal{U} \mapsto 2^\mathcal{D}$ as $m^{-1}(x) = \{ d \in \mathcal{D} \mid x \in m(d) \} $. In this setting, a population is simply a subset of $\mathcal{D}$. 
 
 \begin{definition}[Matching rules]
 Given an alphabet $\Sigma$ and a string length $\ell$, we define the following matching rules:
@@ -229,7 +229,7 @@ which is then used to determine whether the elements of a second input sequence 
 belong to the same class as the elements of $S$:
 
 \begin{definition}[Positive and negative selection]
-Given an input sequence  $S=(s_1,\ldots,s_n) \in \mathcal{U}^n$,
+For an input sequence  $S=(s_1,\ldots,s_n)$, $S \subseteq \mathcal{U}^n$,
 a detector type $\mathcal{D}$ and a matching function $m$,  we call a 
 detector population $P \subseteq \mathcal{D}$
 \begin{enumerate}
@@ -243,7 +243,7 @@ A negatively (positively) selected population $P$ is \emph{maximal} if there is 
 \label{definitionposnegsel} % 2 references
 \end{definition}
 
-For a positively selected population, the scoring function can be understood as a \emph{normalcy score} (a high value $P(y)$ means that $y$ is ``similar to'' $S$) whereas for negative selection, the interpretation is the opposite (\emph{anomaly score}). The scores output by a positively or negatively selected population can be used for threshold-based classification. Note that we did not define which specific detectors are used, only which detectors \emph{could} be in the population. A simple method is generating detectors by rejection sampling. However, depending on the input, rejection rates can be high \cite{Dhaeseleer1996,Dhaeseleer1996b}, and the population sizes required to achieve acceptable classification results also %% can be exponential in the input
+For a positively selected population, the scoring function can be understood as a \emph{normalcy score} (a high value $P(y)$ means that $y$ is ``similar to'' $S$) whereas for negative selection, the interpretation is the opposite (\emph{anomaly score}). The scores output by a positively or negatively selected population can be used for threshold-based classification. Note that we did not define which specific detectors are used, only which detectors \emph{could} be in the population. A simple method is generating detectors by rejection sampling. However, depending on the input, rejection rates can be high \cite{Dhaeseleer1996,Dhaeseleer1996b}, while at the same time huge populations can be required to achieve acceptable classification results %% can be exponential in the input
 \cite{Stibor2005}. 
 
 These issues motivated the development of population compression 
@@ -305,13 +305,7 @@ for the matching rules in Definition~\ref{definitionmatchingrules}, the scoring 
 selection is a constant minus the scoring function of positive selection, and vice versa.
 \end{proof}
 
-Beyond positive and negative selection, further operations that could be performed with FSM-compressed classifier populations include sampling from $P$ or incrementally modifying $P$ \cite{Textor2014}. However, some important limitations remain. Crucially for classification tasks, negative and positive selection do not take into account possible multiplicity of strings in the input sequences. In many real-world cases, it is important to distinguish, say, an input element that occurs once in the training data from another that occurs thousands of times. Moreover, AIS classifiers are essentially ``one-shot'' in that they process the entire input data only once. Many other population-based algorithms modify the populations in more complex ways that require, for instance, weighted sampling from the population or pruning of low-weight elements from the population. Such operations are not supported by FSM-compressed populations.
-
-%these tasks are not substantially more complicated and can be implemented using very similar algorithmic techniques, which is why we don't discuss them in detail here. Earlier versions of these algorithms only distinguished between empty and nonempty $D \cap m^{-1}(t)$ in the classification step -- in effect binarizing the scoring function at a fixed threshold of 1. 
-
-%However, these algorithms are still limited in that they do not take 
-%While compared to these earlier versions, the use of scores is already a substantial improvement (as also in the real immune system, immune responses are likely not raised by single cells),  We therefore suggest the following extension of these models.
-
+Beyond positive and negative selection, further operations that could be performed with FSM-compressed classifier populations include sampling from $P$ or incrementally modifying $P$ \cite{Textor2014}. However, some important limitations remain. Crucially for classification tasks, negative and positive selection do not take into account possible multiplicity of strings in the input sequences. In many real-world cases, it is important to distinguish, say, an input element that occurs once in the training data from another that occurs thousands of times. Moreover, AIS classifiers process the entire input data only once. Many other population-based algorithms modify the populations in more complex ways that require, for instance, weighted sampling from the population or pruning of low-weight elements from the population. Such operations are not supported by FSM-compressed populations.
 
 \section{Weighted Population Compression}
 \label{sectionfsms}\label{sectionwhyrationals}
@@ -324,7 +318,7 @@ implement the three weighted population operators using WFSM
 algorithms.
 
 These WFSMs are preferably as small as possible.
-However, using conventials floats for edge weights instead of
+However, using conventional floats for edge weights instead of
 rationals causes WFSMs to explode in size with the number of
 operations performed on them.
 This is no minor issue;
@@ -386,14 +380,13 @@ In unweighted FSMs, two states can be merged into a single state if
 all of their edges have the same character label and destination.
 In WFSMs  -- after redistributing weights \cite{Mohri2000} --
 edges need also have the same weight label.
-Importantly,
-this extra condition is difficult to meet with inexact float arithmetic.
+This requirement is hard to meet with inexact float arithmetic.
 Figure~\ref{fig:fp-minimization}A (red line)
 demonstrates how inexact arithmetic can
 lead to a increase in WFSM size.
 
-Typical solutions for this problem with floats are to quantize them or to test for 
-approximate equality rather than exact equality, both of which are implemented in OpenFST.
+Typical solutions for this problem with floats are quantization or using approximate
+equality operators, both of which are implemented in OpenFST.
 However, these strategies are ultimately unsuccessful at preventing error accumulation
 when many repeated WFSM operations are performed, as will often be necessary in 
 population-based algorithms. 
@@ -402,62 +395,6 @@ from the Boost library \cite{Gurtovoy2002},
 which restored the equivalence with the unweighted FSM in the final output,
  with  intermediate stages being at most four times larger 
 (Figure~\ref{fig:fp-minimization}B, blue line).
-
-%% The same set of strings -- weighted or not -- can be represented by FSMs in more than one way.
-%% Different (W)FSMs may represent the same set of strings.
-%% Some of these representations have fewer states than others, where (given a set of 
-%% strings), those representations with the fewest possible number of states are called \emph{minimal}.
-
-%% When performing operations on WFSMs in OpenFST,
-%% the WFSMs resulting from these operations will generally not be minimal.
-%% Weighted union, in particular, often produces WFSMs that are larger than necessary.
-%% This becomes especially problematic when performing weighted operations repeatedly,
-%% which will typically be required in population-based algorithms.
-%% In order to keep the size of the WFSMs manageable, they need to be \emph{minimized} after 
-%% such weighted union steps (i.e., transformed to their minimal equivalent).
-%% Doing so requires an equivalence relation for transitions 
-%% through (W)FSMs. For regular FSMs, this equivalence is simply decided by whether the 
-%% transitions have the same label and the same destination state, but for WFSMs, 
-%% equivalence additionally requires the transitions to have the same weight.
-
-%% Importantly, this extra equivalence requirement for WFSMs becomes harder to meet when 
-%% working with inexact float arithmetic. Given a path through the WFSM, the same weight
-%% might be distributed along the path in different ways -- for example, $(\frac{1}{7},7)$, since 
-%% $\frac{1}{7}\times 7=1$.
-%% Yet these path weights, although equivalent, may no longer be recognized as such 
-%% due to small errors when representing these fractions with floats.
-%% These inequalities can prevent WFSMs from minimizing to their smallest possible state,
-%% as demonstrated in Figure~\ref{fig:fp-minimization}A.
-
-%% Typical solutions for this problem with floats are to quantize them or to test for 
-%% approximate equality rather than exact equality, both of which are implemented in OpenFST.
-%% However, these strategies are ultimately unsuccessful at preventing error accumulation
-%% when many repeated WFSM operations are performed, as will often be necessary in 
-%% population-based algorithms. 
-
-
-%% To illustrate this issue, consider 
-%% the problem of computing $M=\sum_i M_i$, where each $M_i$ contains one string 
-%% in $S=\{0,1,2\}^6$ with unit weight.
-%% The different $M_i$ are all disjoint and their union is all of $S$.
-%% Therefore, $w_M(s) = 1$ for all $s\in S$, making this essentially an unweighted FSM
-%% with a minimal $M$ of 7 states and 18 transitions.
-%% In Figure~\ref{fig:fp-minimization}B, we show how WFSM size grows with the number of 
-%% strings contained in intermediate stages of computing $M$. An unweighted FSM implementation
-%% indeed contains 7 states and 18 transitions, whereas a WFSM implemented with float weights
-%% produces a ``minimal'' $M$ with 80 states and 237 transitions.
-
-%% %% \begin{figure}
-%% %%   \centering
-%% %% 	\includegraphics{figures/figure-state-explosion/plots/states2.pdf}
-%% %%   \caption{
-%% %%   }
-%% %%   \label{figurefpvsrationals}
-%% %% \end{figure}
-
-%% To address these issues, we implemented weights using an exact rational representation 
-%% from the Boost library \cite{Gurtovoy2002}, which restored the equivalence with the unweighted 
-%% FSM in the final output, and where intermediate stages were at most four times larger.
 
 \section{A WFSM-Based Artificial Immune System}
 
@@ -470,19 +407,15 @@ it to implement an EA.
 
 \subsection{Positive selection using WFSMs}
 
-Our experiments focus on positive selection. 
+Given the equivalence established by Remark~1, we focus 
+our experiments on positive selection. 
 Consider the following weighted versions of the standard positive  
 selection algorithm defined above:
-%% \begin{definition}[Weighted positive selection]
 
-Given an input sequence  $S=(s_1,\ldots,s_n) \in \mathcal{U}^n$, a detector type $\mathcal{D}$ and a matching function $m$, %%  we define the following:
-%% \begin{enumerate}
-%% \item 
-\emph{weighted positive selection} uses the detector population $P = \biguplus_i m^{-1}(s_i)$ with weights $w(d) = |\{i : d \in m^{-1}(s_i)\}|$ where each detector is weighted by the number of input samples it recognizes.
+For an input sequence  $S=(s_1,\ldots,s_n) \in \mathcal{U}^n$, a detector type $\mathcal{D}$ and a matching function $m$, \emph{weighted positive selection} uses the detector population $P = \biguplus_i m^{-1}(s_i)$ with weights $w(d) = |\{i : d \in m^{-1}(s_i)\}|$ where each detector is weighted by the number of input samples it recognizes.
 The \emph{scoring function} $P_w(t)$ assigns a normalcy score $\sum_{d \in P \cap m^{-1}(t)} w(d)$
 to every $t \in \mathcal{U}$.
-%\item \emph{Weighted negative selection} uses the detector population $D = \mathcal{D} \setminus \bigcup_i m^{-1}(s_i)$ with a pre-existing weighting function $w : \mathcal{D} \mapsto \mathbb{R}$. 
-%% \end{enumerate}
+
 
 \begin{algorithm}
 \caption{Weighted positive selection}
@@ -502,57 +435,21 @@ $M \gets \biguplus_{i=1}^{n} M[s_i]$
 \end{algorithm}
 
 
-%% \label{definitionweightedposnegsel}
-
-%% \end{definition}
-
-%Introducing weights breaks the simple duality between positive and negative selection algorithms, and even using maximal detector sets, the results will no longer be equivalent. This is because weights in positive selection encode information about multiplicity in the input sample, whereas weights in negative selection encode a pre-existing bias among detectors. Such a bias might seem like an odd choice, but it is relevant in computational immunology because it is well-known that different immune cell receptor sequences have very different chances to be generated \cite{Elhanati2014}. 
-
-%In addition to positive and negative selection, weighted versions of other repertoire modeling tasks \cite{Textor2014} could be considered  -- e.g., sampling could be performed proportionally or inversely proportionally to the weights.
-
-We can implement weighted positive %and negative 
-selection in a similar manner as done previously for the unweighted version
+We can implement weighted positive selection in a similar manner as done previously for the unweighted version
 (Definition~\ref{definitionposnegsel}). An important prerequisite is that 
 for each input string $s \in \mathcal{U}$, we are able to generate a WFSM
 $M[s]$ containing all detectors that recognize $s$ with unit weights, i.e.,
 $w_{M[s]}(d) = \mathbf{1}(d \in m^{-1}(s))$, $\mathbf{1}$ being an indicator function.
-%% $$
-%% w_{M[s]}(d) = \cases{$1$ & if $d \in m^{-1}(s)$ \cr $0$ & otherwise}
-%% $$
-%% $$
-%% w_{M[s]}(d) = \begin{cases} 1 & d \in m^{-1}(s) \\ 0  & \text{otherwise}\end{cases}
-%% $$
 Earlier work shows how to construct such FSMs for common matching 
-rules \cite{Textor2014}. %% ; we can simply add unit weights to all edges to obtain the required WFSM. 
+rules \cite{Textor2014}. 
 Then we can implement weighted positive selection as shown in Algorithm~\ref{algorithmweightedpossel}.
 
-
-%Weighted negative selection is implemented similarly; it requires only one 
-%additional operation as shown in Algorithm~\ref{algorithmweightednegsel}. This algorithm uses an operator $M[\mathcal{D}]$ denoting construction of a WFSM containing all possible detectors. This can be constructed using unit weights, or possibly other weights representing pre-existing biases in the population, such as those arising from biased sequence recombination events in the real immune system \cite{Elhanati2014}.
-
-%\begin{algorithm}
-%\caption{Weighted negative selection}
-%\SetKwProg{generate}{Function \emph{generate}}{}{end}
-%\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
-%\Input{Samples $S=(s_1,\ldots,s_k) \in \mathcal{U}^k, T=(t_1,\ldots,t_l)  \in \mathcal{U}^l$}
-%
-%\Output{Scores $D_w(t)$ for each $t_i \in T$}
-
-%$M \gets \bigcup_{i=1}^{n} M[s_i]$ 
-
-%$M \gets M[\mathcal{D}] \ominus M$
-
-%\ForEach{$i \in \{1,\ldots,l\}$}{
-%	output $|M \cap M[t_i]|$
-%}
-%\label{algorithmweightednegsel}
-%\end{algorithm}
 
 \subsection{Probabilistic classification}
 
 \label{sectionempirical}
 
-We will now investigate how this extension can help to solve classification problems.
+We now investigate whether and how this extension improves classifier performance.
 
 Standard unweighted negative and positive selection algorithms
 were based on the assumption that the universe
@@ -605,8 +502,6 @@ distributions $D(X(0^\ell,\mu))$ and $D(X(1^\ell,\mu))$ are as different as
 possible -- we will use the area under the receiver operating characteristic
 curve (AUC)  to measure this difference.
 
-%To solve this problem, it should be critical to take multiplicity into account.
-
 
 
 
@@ -621,7 +516,7 @@ samples have little multiplicity and the two versions initially behaved very sim
 of weighted selection kept improving with larger samples as expected (Figure~\ref{figurestringdistinction}A, red line).
 Thus, we conclude that fuzzy classification problems can be difficult to solve using
 unweighted AIS classifiers, especially at large sample sizes.
-Weighted positive selection was also more robust to higher mutation 
+Weighted positive selection performed better and was also more robust to higher noise 
 rates $\mu$ (Figure~\ref{figurestringdistinction}B), which -- similar to larger input 
 sizes -- endanger performance by increasing the frequency of foreign-looking 
 strings in the training input.
@@ -649,7 +544,7 @@ $t = 2,3,4$ now giving very similar performances throughout a range of input siz
 	(mean $\pm$ SEM) of 20 independent runs is shown for $\ell=8$; default values 
 	are $\mu=0.6, t=5, N=250$, and the test set contains 100 random samples per class.
 	Unweighted positive selection performs worse with increasing input size (A) and
-	at high mutation rate (B). It is also more sensitive to the choice of the parameter 
+	at high noise (B). It is also more sensitive to the choice of the parameter 
 	$t$ (C, D). Dashed lines in (A,B) highlight the same parameter combination.
 	Arrows represent the values of $\mu$ and $N$ for which the expected number of strings 
 	with a majority of foreign bits in a training  sample exceeds 1. 
@@ -777,14 +672,10 @@ then the problem is \emph{satisfiable}.
 %% by corresponding to each string $x$ in $\Sigma^\ell$ a truth
 %% assignment $t_x(v_i) = x_i$, i.e., the $i$th letter in $x$ is the value for the $i$th variable of the problem.
 
-Provided a satisfiable problem,
-a witness to its satisfiability may be found by running an EA over
-truth assignments,
-using the number of satisfied clauses as fitness function.
-An EA should find a witness eventually,
-but for some problems this can take exceedingly long.
-The next section explains how we construct a WFSM-based EA
-to hopefully have an advantage with such problems.
+Most Boolean satisfiability problems are NP-hard, but some randomized 
+search heuristics, such as the WalkSAT algorithm \cite{Schoning99}, 
+perform decently. In the next section, we use WFSMs to
+devise a novel approach to tackle such problems.
 
 %% \subsection{The farthest string problem}
 %% \subsection{Satisfiability}
@@ -849,29 +740,18 @@ Glassy problems have a rugged fitness landscape full of local minima, which the
 
 Our WFSM-based approach is based on the following idea: instead of moving through 
 the fitness landscape along individual trajectories, we can explore entire subregions at once
-by constructing \emph{Hamming balls} centered at a given candidate solution and jointly evaluating the fitness of all strings in this Hamming ball.
-%% If we are able to 
-%% jointly evaluate the fitness of all strings in the Hamming ball, then this will allow us to
-%% quickly leap across valleys separating local minima. 
+by constructing \emph{Hamming balls} centered at a given candidate solution 
+and jointly evaluating the fitness of all strings in this Hamming ball.
 
 This joint evaluation proceeds as follows.
 For each clause $c_i$ for $i \in \{1, \ldots, n\}$ we preconstruct
 a WFSM $L_i$ that accepts local solutions:
 all strings that satisfy the corresponding clause with unit weights.
-%% \footnote{
-%% Given this supposition, there is a more direct solve.
-%% Any $s^*$ is in $\bigcap_{i=1}^n L_i$ if and only if it solves
-%% all constraints.
-%% This intersection can be computed using FSMs,
-%% leading to an FSM that accepts precisely all such $s^*$.
-%% However, this technique is not practical,
-%% because intermediate automata grow very large for large inputs.
-%% }
 Then \mbox{$\biguplus_{i=1}^n (L_i \capdot B)$}, with $B$ being our Hamming ball,
 results in a WFSM that contains all strings in $B$ solving at
 least one clause,
 with a weight equal to the number of clauses solved.
-Each $L_i$ is preconstructed by taking the complement of the easily
+Each $L_i$ is pre-constructed by taking the complement of the easily
 constructed WFSM that accepts strings that falsify $c_i$.
 
 \begin{algorithm}[t]
@@ -921,7 +801,6 @@ of each round, a pruning is performed that removes all strings whose weights are
 $p$ times the maximum fitness. Note that, unlike in most EAs, the population size of this
 algorithm is not fixed.
 
-
 \subsection{The WFSM-based algorithm escapes local optima}
 
 \begin{figure}[t]
@@ -957,13 +836,12 @@ algorithm is not fixed.
    \label{satsolving}
 \end{figure}
 
-We obtained a collection of difficult satisfiability problems by
-downloading a collection from SATLIB called ``Uniform Random-3-SAT''
-\cite{Hoos2000}.
+We investigated a collection of difficult satisfiability problems
+from SATLIB called ``Uniform Random-3-SAT'' \cite{Hoos2000}.
 This collection consists of randomly generated
 problems with a fixed number of clauses and variables 
 that are unusually difficult to solve \cite{Cheeseman1991,mitchell1992}.
-We expected such problems to have a \emph{glassy} solution landscape
+We expected such problems to have a glassy solution landscape
 \cite{Kirkpatrick1994}, and hypothesized that an EA operating in 
 such a landscape might benefit from Algorithm~\ref{algorithmweightedea}'s
 ability to support large population sizes.
@@ -972,15 +850,13 @@ We selected four satisfiable problems with 50 variables and 218 clauses
 at random from the ``Uniform Random-3-SAT'' collection to run our EAs on.
 We performed six runs of both EAs on each problem,
 cutting them short if no solution is found in ten minutes.
-%
 Algorithm~\ref{algorithmweightedea} and the 1+1-EA both find strings
 that solve at least 210 of the clauses within seconds
 (Figure~\ref{satsolving}A).
-In all runs,
-1+1-EA gets stuck in a local optimum after these first seconds.
+In all runs, our
+1+1-EA got stuck in a local optimum after these first seconds.
 Algorithm~\ref{algorithmweightedea} finds new optima comparatively
 quickly.
-%
 When Algorithm~\ref{algorithmweightedea} finds a new optimum,
 its population size falls (Figure~\ref{satsolving}B),
 because the pruning step removes strings that solve too few
@@ -991,7 +867,7 @@ from which to expand further.
 
 A single ``clutch'' of offspring consists of 20876 strings,
 whose fitness is evaluated concurrently in $n+1$ automata operations.
-However, this large amount of simultaneous fitness evaluations does not 
+However, this large amount of simultaneous fitness evaluations alone does not 
 explain why Algorithm~\ref{algorithmweightedea} find the optimum faster;
 in fact, the 1+1-EA performs two orders of magnitude more fitness evaluations
 per time unit (Figure~\ref{satsolving}C).

@@ -10,7 +10,7 @@ all: $(name).pdf
 
 
 $(name).pdf: $(name).tex $(figures) references.bib
-	latexmk -pdf $<
+	latexmk -use-make -pdf $<
 
 
 clean:
