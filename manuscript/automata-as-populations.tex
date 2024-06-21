@@ -8,7 +8,6 @@
 \usepackage{stix}
 
 \newcommand{\text}[1]{\textrm{#1}}
-\graphicspath{{../}}
 \bibliographystyle{splncs04}
 
 \title{Population-Based Algorithms \\
@@ -78,7 +77,7 @@ edge weights (Section~\ref{sectionfsms}). This approach allows us to augment the
 \end{enumerate}
 
 
-We have implemented our WFSM-based algorithms in C++, making heavy use of the library OpenFST \cite{openfst}. Our code is available for download at \url{}.
+We have implemented our WFSM-based algorithms in C++, making heavy use of the library OpenFST \cite{openfst}. An implementation is available for download at Zenodo \cite{CodeForPaper}.
 
 \section{Background}
 
@@ -229,7 +228,7 @@ which is then used to determine whether the elements of a second input sequence 
 belong to the same class as the elements of $S$:
 
 \begin{definition}[Positive and negative selection]
-For an input sequence  $S=(s_1,\ldots,s_n)$, $S \subseteq \mathcal{U}^n$,
+For an input sequence  $S=(s_1,\ldots,s_n)$, $S \in \mathcal{U}^n$,
 a detector type $\mathcal{D}$ and a matching function $m$,  we call a 
 detector population $P \subseteq \mathcal{D}$
 \begin{enumerate}
@@ -264,9 +263,9 @@ depends on the matching rule that is used.
 \begin{figure}[t]
   \begin{tabular}{p{0.5em}@{}cp{0.5em}@{}c}
     \raisebox{-\height}{A} &
-    \raisebox{-\height}{\includegraphics{figures/figure-compressed-strings/drawing.eps}}
+    \raisebox{-\height}{\includegraphics{figures/drawing.eps}}
     \raisebox{-\height}{B} &
-    \raisebox{-\height}{\includegraphics{figures/figure-wfsm/wfsm-table.eps}}
+    \raisebox{-\height}{\includegraphics{figures/wfsm-table.eps}}
   \end{tabular}
   \caption{
     FSMs as compact representations of sets of strings.
@@ -331,9 +330,9 @@ using a simple task.
   \centering
   \begin{tabular}{p{0.5em}@{}cp{0.5em}@{}c}
     \raisebox{-\height}{A} &
-    \raisebox{-\height}{\includegraphics{figures/figure-why-rationals/diagram.eps}} &
+    \raisebox{-\height}{\includegraphics{figures/diagram.eps}} &
     \raisebox{-\height}{B} &
-    \raisebox{-\height}{\includegraphics{figures/figure-state-explosion/plots/states3.pdf}}
+    \raisebox{-\height}{\includegraphics{figures/states3.pdf}}
   \end{tabular}
   \caption{
     Exact arithmetic helps keeping WFSMs small.
@@ -520,9 +519,6 @@ Weighted positive selection performed better and was also more robust to higher 
 rates $\mu$ (Figure~\ref{figurestringdistinction}B), which -- similar to larger input 
 sizes -- endanger performance by increasing the frequency of foreign-looking 
 strings in the training input.
-%. A ``phase transition''
-%occurred at around 100 training strings, when it becomes very likely to find 
-%the center string of the ``foreign'' class in the input. {\color{red}Figure?}
 
 A well-known problem with AIS classifiers  is their sometimes extreme sensitivity to the 
 threshold parameter $t$ that determines which strings are ``similar''
@@ -537,7 +533,7 @@ $t = 2,3,4$ now giving very similar performances throughout a range of input siz
 \begin{figure}[t]
   \centering
 	%\includegraphics{figures/figure-string-distinction/plots/analysis.pdf}
-   \includegraphics[width=0.47\textwidth]{figures/figure-string-distinction/plots/bitstring-mu-ntrain.pdf}\includegraphics[width=0.47\textwidth]{figures/figure-string-distinction/plots/bitstring-t-n.pdf}
+   \includegraphics[width=0.47\textwidth]{figures/bitstring-mu-ntrain.pdf}\includegraphics[width=0.47\textwidth]{figures/bitstring-t-n.pdf}
 
    \caption{
 	Weighted and unweighted positive selection on the noisy bitstring problem. Throughout, AUC 
@@ -600,7 +596,7 @@ there, such as when comparing English to more English. %% (e.g., in the case com
 \begin{figure}[t]
   \centering
 	%\includegraphics{figures/figure-string-distinction/plots/analysis.pdf}
-   \includegraphics[width=\textwidth]{figures/figure-lang-distinction/plots/fig4.pdf}
+   \includegraphics[width=\textwidth]{figures/fig4.pdf}
    \caption{ 
    Language anomaly detection performance of a positive selection algorithm drops for 
    large training sets and is rescued by adding weights. 3-grams were extracted from 
@@ -810,11 +806,11 @@ algorithm is not fixed.
   \renewcommand{\arraystretch}{0.0}
   \begin{tabular}{p{5pt}@{}cp{5pt}@{}c}
     \raisebox{-\height}{A} & %
-    \multicolumn{3}{c}{\raisebox{-\height}{\includegraphics{figures/figure-genetic-algorithms/plots/constraints-over-time.pdf}}} \\
+    \multicolumn{3}{c}{\raisebox{-\height}{\includegraphics{figures/constraints-over-time.pdf}}} \\
     \raisebox{-\height}{B} & %
-    \raisebox{-\height}{\includegraphics{figures/figure-genetic-algorithms/plots/populationsize-over-time.pdf}} & %
+    \raisebox{-\height}{\includegraphics{figures/populationsize-over-time.pdf}} & %
       \raisebox{-\height}{C} & %
-      \raisebox{-\height}{\includegraphics{figures/figure-genetic-algorithms/plots/evaluations-over-time.pdf}}
+      \raisebox{-\height}{\includegraphics{figures/evaluations-over-time.pdf}}
   \end{tabular}
   \endgroup
   \caption{
