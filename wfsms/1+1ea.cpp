@@ -1,3 +1,4 @@
+#include <cassert>
 #include <ctime>
 #include <fstream>
 #include <iostream>
@@ -5,15 +6,20 @@
 #include <random>
 #include <vector>
 
+#include "dimacs.hpp"
 #include "trim.hpp"
 
 using u64 = uint64_t;
 
-struct clause {
+/* Simply a representation of a clause for problems of at most 64
+   variables that can be evaluated quickly.  Named after the number of
+   bits needed to represent a clause in order to distinguish it from the
+   clause type exported from dimacs.hpp. */
+struct clause128 {
     u64 mask;
     u64 constraint;
 
-    constexpr clause() : mask(0), constraint(0) {}
+    constexpr clause128() : mask(0), constraint(0) {}
 };
 
 static std::mt19937 rng;
@@ -21,26 +27,40 @@ static float mu;
 static int nbits;
 static int indexes[std::numeric_limits<u64>::digits];
 static std::ofstream fout;
-static std::vector<clause> problem;
+static std::vector<clause128> problem;
 static unsigned long long max_seconds;
 
 
 static u64 random_model();
 
-static inline void clause_add_var(clause *c, int variable, bool positive) {
+static inline void clause_add_var(clause128 *c, int variable, bool positive) {
     c->mask |= 1 << variable;
     c->constraint |= (!positive) << variable;
 }
 
-static inline bool clause_eval(const clause &c, u64 model) {
+static inline bool clause_eval(const clause128 &c, u64 model) {
     return c.constraint ^ (c.mask & model);
 }
 
-static u64 clause_random_satisfying_model(const clause &c) {
+static u64 clause_random_satisfying_model(const clause128 &c) {
     u64 result;
     do {
         result = random_model();
     } while (!clause_eval(c, result)); // This averages 8/7 repetitions.
+    return result;
+}
+
+static std::vector<clause128> construct_problem(const sat &cnf) {
+    assert(64 >= cnf.nvars);
+    nbits = cnf.nvars;
+    std::vector<clause128> result;
+    result.reserve(cnf.clauses.size());
+    for (const auto &c : cnf.clauses) {
+        result.push_back({});
+        for (const auto &v : c) {
+            clause_add_var(&result.back(), abs(v), 0 < v);
+        }
+    }
     return result;
 }
 
@@ -88,48 +108,6 @@ static u64 offspring(u64 parent) {
     return parent ^ flipbits;
 }
 
-static std::vector<clause> read_csv(std::istream &csv) {
-    std::vector<clause> result;
-    std::string line;
-    std::getline(csv, line);
-    if (!csv) {
-        std::cerr << "Cannot find problem CSV header line." << std::endl;
-        std::abort();
-    }
-    trim(line);
-    if (line != "type,string") {
-        std::cerr << "Expected problem CSV to have fields 'type' and 'string' in that order." << std::endl;
-        std::abort();
-    }
-    while (std::getline(csv, line)) {
-        trim(line);
-        std::string type = line.substr(0, 2);
-        std::string string = line.substr(2);
-        if (type[1] != ',') {
-            std::cerr << "Expected type field to be '1', '2', or '3'" << std::endl;
-            std::abort();
-        }
-        if (type[0] == '1') {
-            nbits = string.size();
-            if (std::numeric_limits<u64>::digits < nbits) {
-                std::terminate();
-            }
-            result.push_back({});
-            for (int i=0; i<string.size(); ++i) {
-                char l = string[i];
-                if ('0' <= l && l <= '1') {
-                    clause_add_var(&result.back(), string.size()-i-1, '0' == l);
-                }
-            }
-        } else if (type[0] == '2' || type[0] == '3') {
-        } else {
-            std::cerr << "Expected type field to be '1', '2', or '3'" << std::endl;
-            std::abort();
-        }
-    }
-    return result;
-}
-
 static u64 random_model() {
     const int maxbits = std::numeric_limits<u64>::digits;
     u64 result;
@@ -172,7 +150,7 @@ int main(int argc, char **argv) {
     std::ifstream fin(argv[1]);
     mu = std::stof(argv[2]);
     max_seconds = std::strtoull(argv[3], nullptr, 10);
-    problem = read_csv(fin);
+    problem = construct_problem(read_cnf(fin));
     fin.close();
     fout.open(argv[4], std::ios::out);
     const unsigned long long report_modulo = 6 <= argc ? std::strtoull(argv[5], nullptr, 10) : 25000000;

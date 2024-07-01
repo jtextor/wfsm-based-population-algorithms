@@ -5,11 +5,11 @@
 
 using clause = std::vector<int>;
 
-struct csp {
+struct sat {
     int nvars;
     std::vector<clause> clauses;
 };
 
-csp read_cnf(std::istream&);
+sat read_cnf(std::istream&);
 
 #endif /* !defined(DIMACS_HPP) */

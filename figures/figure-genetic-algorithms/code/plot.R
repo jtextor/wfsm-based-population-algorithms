@@ -11,10 +11,12 @@ size <- 7
 
 wi <- read_csv(paste0(wagadir, "index.csv"),
         col_types="cic", col_names=c("problem", "radius", "outcsv")) |>
+    mutate(problem=paste0(wagadir, problem), outcsv=paste0(wagadir, outcsv)) |>
     rowid_to_column(var="key")
 
 ei <- read_csv(paste0(eadir, "index.csv"),
         col_types="cdc", col_names=c("problem", "mu", "outcsv")) |>
+    mutate(problem=paste0(eadir, problem), outcsv=paste0(eadir, outcsv)) |>
     rowid_to_column(var="key")
 
 wd <- reduce(wi$outcsv,
@@ -72,7 +74,6 @@ p1 <- ggplot(both, aes(x=duration_ms*1e-3, y=fitness, group=interaction(key, Alg
     coord_cartesian(ylim=c(210, 218.5)) +
     mytheme + theme(legend.position=c(0.15, 0.9))
 
-#ggsave(p1, file="plots/constraints-over-time.pdf", width=4.7, height=1.2, units="in", bg="transparent", family=family, pointsize=size, dpi=1200, useDingbats=F, useKerning=T)
 ggsave(p1, file="plots/constraints-over-time.pdf", width=4.2, height=1.0, units="in", bg="transparent", family=family, pointsize=size, dpi=1200, useDingbats=F, useKerning=T)
 
 p2 <- ggplot(k17a, aes(x=duration_ms*1e-3, y=nstrings)) +
@@ -89,7 +90,7 @@ ggsave(p2, file="plots/populationsize-over-time.pdf", width=2.1, height=1.0, uni
 
 m <- mutate(both, nevals=ifelse(Algorithm=="Algorithm 2", 20876*step, step))
 
-p3 <- ggplot( filter(m, basename(problem)=="uf50-0748.csv"),
+p3 <- ggplot( filter(m, basename(problem)=="uf50-0748.cnf"),
     aes(x=1e-3*duration_ms, y=nevals, group=interaction(key, Algorithm), color=Algorithm)
     ) +
     geom_line(position=position_jitter(h=0.2, w=0), linewidth=0.2) +

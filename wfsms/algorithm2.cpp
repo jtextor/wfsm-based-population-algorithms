@@ -34,7 +34,7 @@ static term fittest(const ratfa &f) {
     return *begin(g);
 }
 
-static std::vector<ratfa> precompute(const csp &cnf) {
+static std::vector<ratfa> precompute(const sat &cnf) {
     std::vector<ratfa> result;
     result.reserve(cnf.clauses.size());
     for (const auto &clause : cnf.clauses) {
@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
         return 1;
     }
     if (6 != argc) {
-        std::cerr << "usage: waga <problem cnf> <max user seconds> <radius> <prunefract> <outcsv>" << std::endl;
+        std::cerr << "usage: " << argv[0] << " <problem cnf> <max user seconds> <radius> <prunefract> <outcsv>" << std::endl;
         return 1;
     }
     std::ifstream fprob(argv[1]);

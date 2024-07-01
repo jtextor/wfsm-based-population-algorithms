@@ -60,8 +60,8 @@ $(TARGET_DIR)/algorithm2: $(ALGORITHM2_OBJECTS) $(OBJECT_DIR)/dimacs.o $(OBJECT_
 $(TARGET_DIR)/solve: $(SOLVE_OBJECTS) $(OBJECT_DIR)/dimacs.o $(OBJECT_DIR)/solve.o | $(TARGET_DIR)
 	$(CXX) -std=c++1z -o $@ $^ -lfst
 
-$(TARGET_DIR)/1+1ea: 1+1ea.cpp | trim.hpp $(TARGET_DIR)
-	$(CXX) -std=c++1z -o $@ $^
+$(TARGET_DIR)/1+1ea: 1+1ea.cpp $(OBJECT_DIR)/dimacs.o | trim.hpp $(TARGET_DIR)
+	$(CXX) -g -std=c++1z -o $@ $^
 
 -include $(DEPS)
 

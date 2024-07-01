@@ -6,11 +6,11 @@
 #include "trim.hpp"
 
 
-csp read_cnf(std::istream &cnf) {
+sat read_cnf(std::istream &cnf) {
     enum { Comment, Problem, Clauses } state = Comment;
     int nclauses = -1;
     int clauses_read = 0;
-    csp result;
+    sat result;
     for (std::string line; std::getline(cnf, line);) {
         trim(line);
         if (Comment == state) {
