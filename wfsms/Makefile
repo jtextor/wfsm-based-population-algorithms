@@ -4,9 +4,12 @@ SHELL = /bin/sh
 OBJECT_DIR := objects
 TARGET_DIR := targets
 
+COMPRESS_TARGETS := $(addsuffix _compress,boolfa logfa ratfa)
+COMPRESS_OBJECTS := $(addprefix $(OBJECT_DIR)/,$(addsuffix .o,$(COMPRESS_TARGETS)))
 WA_LIB_NAMES := termiter sat wfsms rational_weight safe_integer
-WA_TARGET_NAMES := $(addsuffix _compress,boolfa logfa ratfa) boolfa_possel ratfa_possel ratfa_learn ratfa_classify algorithm2 solve
+WA_TARGET_NAMES := $(COMPRESS_TARGETS) ratfa_possel ratfa_learn ratfa_classify algorithm2
 OTHER_TARGET_NAMES := 1+1ea
+DIMACS_TARGETS := $(addprefix $(TARGET_DIR)/,1+1ea algorithm2)
 
 TARGET_NAMES := $(WA_TARGET_NAMES) $(OTHER_TARGET_NAMES)
 OBJECT_NAMES := $(TARGET_NAMES) $(SHARED_NAMES)
@@ -24,12 +27,11 @@ $(foreach wa_target,$(WA_TARGET_NAMES),\
 	$(eval $(call uc,$(wa_target))_NAMES := $(wa_target) $(WA_LIB_NAMES)))
 
 $(foreach target,$(TARGET_NAMES),\
-	$(eval $(call uc,$(target))_OBJECTS := $(addprefix $(OBJECT_DIR)/,$(addsuffix .o,$($(call uc,$(target))_NAMES)))))
+	$(eval $(call uc,$(target))_OBJECTS := $(addprefix $(OBJECT_DIR)/,$(addsuffix .o,$(target) $($(call uc,$(target))_NAMES)))))
 
 
 # Let $(CXX) determine which headers each source file depends on.
 DEPS := $(OBJECTS:%.o=%.d)
-
 
 all: $(TARGETS)
 	
@@ -42,40 +44,24 @@ distclean: clean
 
 .PHONY: clean distclean
 
-$(TARGET_DIR)/boolfa_compress: $(BOOLFA_COMPRESS_OBJECTS) $(OBJECT_DIR)/boolfa_compress.o | $(TARGET_DIR)
-	$(CXX) -std=c++1z -o $@ $^ -lfst
-
-$(TARGET_DIR)/logfa_compress: $(LOGFA_COMPRESS_OBJECTS) $(OBJECT_DIR)/logfa_compress.o | $(TARGET_DIR)
-	$(CXX) -std=c++1z -o $@ $^ -lfst
-
-$(TARGET_DIR)/ratfa_compress: $(RATFA_COMPRESS_OBJECTS) $(OBJECT_DIR)/ratfa_compress.o | $(TARGET_DIR)
-	$(CXX) -std=c++1z -o $@ $^ -lfst
-
-$(TARGET_DIR)/boolfa_possel: $(BOOLFA_POSSEL_OBJECTS) $(OBJECT_DIR)/boolfa_possel.o | $(TARGET_DIR)
-	$(CXX) -std=c++1z -o $@ $^ -lfst
-
-$(TARGET_DIR)/ratfa_possel: $(RATFA_POSSEL_OBJECTS) $(OBJECT_DIR)/ratfa_possel.o | $(TARGET_DIR)
-	$(CXX) -std=c++1z -o $@ $^ -lfst
-
-$(TARGET_DIR)/ratfa_classify: $(RATFA_CLASSIFY_OBJECTS) $(OBJECT_DIR)/ratfa_classify.o | $(TARGET_DIR)
-	$(CXX) -std=c++1z -o $@ $^ -lfst
-
-$(TARGET_DIR)/ratfa_learn: $(RATFA_LEARN_OBJECTS) $(OBJECT_DIR)/ratfa_learn.o | $(TARGET_DIR)
-	$(CXX) -std=c++1z -o $@ $^ -lfst
-
-$(TARGET_DIR)/algorithm2: $(ALGORITHM2_OBJECTS) $(OBJECT_DIR)/dimacs.o $(OBJECT_DIR)/algorithm2.o | $(TARGET_DIR)
-	$(CXX) -std=c++1z -o $@ $^ -lfst
-
-$(TARGET_DIR)/solve: $(SOLVE_OBJECTS) $(OBJECT_DIR)/dimacs.o $(OBJECT_DIR)/solve.o | $(TARGET_DIR)
-	$(CXX) -std=c++1z -o $@ $^ -lfst
-
-$(TARGET_DIR)/1+1ea: 1+1ea.cpp $(OBJECT_DIR)/dimacs.o | trim.hpp $(TARGET_DIR)
-	$(CXX) -g -std=c++1z -o $@ $^
+$(OBJECT_DIR) $(TARGET_DIR):
+	mkdir -p $@
 
 -include $(DEPS)
 
-$(OBJECT_DIR)/%.o: %.cpp | $(OBJECT_DIR)
-	$(CXX) -std=c++1z -c -MMD -O3 -o $@ $<
+$(COMPRESS_OBJECTS): fatype_compress.cpp
+	$(CXX) -c -DFA_TYPE=$(subst _compress.o,,$(@F)) -std=c++1z -MMD -O3 -o $@ $<
 
-$(OBJECT_DIR) $(TARGET_DIR):
-	mkdir -p $@
+$(TARGET_DIR)/1+1ea: 1+1ea.cpp $(OBJECT_DIR)/dimacs.o | $(TARGET_DIR)
+	$(CXX) -std=c++1z -o $@ $^
+
+$(TARGET_DIR)/algorithm2: $(ALGORITHM2_OBJECTS) $(OBJECT_DIR)/dimacs.o | $(TARGET_DIR)
+	$(CXX) -std=c++1z -o $@ $^ -lfst
+
+.SECONDEXPANSION:
+
+$(filter-out $(COMPRESS_OBJECTS),$(OBJECTS)): $$(subst .o,.cpp,$$(@F)) | $(OBJECT_DIR)
+	$(CXX) -c -std=c++1z -MMD -O3 -o $@ $<
+
+$(filter-out $(DIMACS_TARGETS),$(TARGETS)): $$($$(call uc,$$(@F))_OBJECTS) | $(TARGET_DIR)
+	$(CXX) -std=c++1z -o $@ $^ -lfst

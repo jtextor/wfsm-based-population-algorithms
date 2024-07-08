@@ -4,7 +4,12 @@
 #include "trim.hpp"
 #include "wfsms_fwd.hpp"
 
-static void report(const boolfa &fa) {
+#ifndef FA_TYPE
+#define FA_TYPE ratfa
+#endif /* defined(FA_TYPE) */
+using fatype = FA_TYPE;
+
+static void report(const fatype &fa) {
     int nstrings = count(fa);
     int nstates = fa.NumStates();
     int narcs = 0;
@@ -15,14 +20,15 @@ static void report(const boolfa &fa) {
 }
 
 static void rollover(std::string *s) {
-    int i = s->size();
+    std::string &sr = *s;
+    int i = sr.size();
     do {
         --i;
-        if (s->at(i) != '2') {
-            ++s->at(i);
+        if (sr[i] != '2') {
+            ++sr[i];
             break;
         } else {
-            s->at(i) = '0';
+            sr[i] = '0';
         }
     } while (0 < i);
 }
@@ -35,12 +41,12 @@ int main(int argc, char **argv) {
     int length = strtol(argv[1], nullptr, 10);
     assert(0 < length);
 
-    std::vector<boolfa> automata;
+    std::vector<fatype> automata;
     std::string s(length, '0');
     std::string t(length, '2');
     std::cout << "nstrings,nstates,narcs\n";
     for (;;) {
-        automata.push_back(singleton<boolfa>(s));
+        automata.push_back(singleton<fatype>(s));
         report(automata.back());
         if (s != t) {
             rollover(&s);
@@ -49,8 +55,8 @@ int main(int argc, char **argv) {
         }
     }
 
-    std::vector<boolfa> folded;
-    std::vector<boolfa> &a = automata, &b = folded;
+    std::vector<fatype> folded;
+    std::vector<fatype> &a = automata, &b = folded;
     while (1 < a.size()) {
         b.resize(1 + ((a.size() - 1) >> 1));
         for (int i=0; i < (a.size() & (~1ULL)); i += 2) {

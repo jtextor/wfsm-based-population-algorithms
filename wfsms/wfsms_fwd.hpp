@@ -32,7 +32,9 @@ using boolweight = typename boolfa::Weight;
  * it so semiring multiplication is implemented by float addition, which
  * makes operations on automata significantly faster in practice.  Using
  * floats instead with float addition and multiplication makes no impactful
- * difference in automata size explosion due to rounding errors. */
+ * difference in automata size explosion due to rounding errors.  Such
+ * non-logtransformed weights are only present in newer OpenFST releases
+ * anyway. */
 using logarc = fst::LogArc;
 using logfa = fst::VectorFst<logarc>;
 using logweight = typename logarc::Weight;
