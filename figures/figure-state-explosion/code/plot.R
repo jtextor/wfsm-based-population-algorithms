@@ -2,7 +2,7 @@
 
 library( dplyr, warn.conflict = FALSE )
 library( ggplot2 )
-source("../mytheme.R")
+source("mytheme.R")
 
 outfile <- commandArgs( trailingOnly = TRUE ) [1]
 
@@ -10,29 +10,29 @@ family <- "sans"
 size <- 7
 
 getData <- function( f = "without_push_quantize/real-encode", tag = "reals" ){
-	d <- read.csv(paste0("../data/",f,".csv.gz"))
+	d <- read.csv(paste0("data/",f,".csv.gz"))
 	d$fsa <- tag
 	return(d)
 }
 
 files <- c( 
-	"reals" = "without_push_quantize/real__6_6",
-	"rationals" = "with_push_quantize/rational_6_6",
-	"unweighted" = "without_push_quantize/tpl__6_6"
+	"reals" = "logfa",# "without_push_quantize/real__6_6",
+	"rationals" = "ratfa", #"with_push_quantize/rational_6_6",
+	"unweighted" = "boolfa"#"without_push_quantize/tpl__6_6"
 )
 
 all.data <- bind_rows( lapply( 1:3, function(i){
 	getData( files[i], names(files)[i] )
 })) %>%
-mutate( size = nnodes+nedges )	%>%
-mutate( nwords2 = nwords * rnorm( length(nwords), mean = 1, sd =  0.05))
+mutate( size = nstates+narcs )	%>%
+mutate( nwords2 = nstrings * rnorm( length(nstrings), mean = 1, sd =  0.05))
 
 d1 <- all.data %>% 
-	group_by( fsa, nwords ) %>%
+	group_by( fsa, nstrings ) %>%
 	summarize( msize = mean(size), sd = sd(size) )
 
 
-p <- ggplot( all.data, aes( x = nwords, y =size, group = fsa, color = fsa, fill = fsa, lty = fsa ) ) +
+p <- ggplot( all.data, aes( x = nstrings, y =size, group = fsa, color = fsa, fill = fsa, lty = fsa ) ) +
 	stat_smooth( size = .5, se=FALSE ) +
 	#stat_smooth(data = all.data[ all.data$fsa == "rationals", ], size = 0.3, se=FALSE ) +
 	geom_jitter( size = .2, show.legend = FALSE, aes( x = nwords2 ), alpha=0.3) +

@@ -8,6 +8,8 @@
 #define FA_TYPE ratfa
 #endif /* defined(FA_TYPE) */
 using fatype = FA_TYPE;
+#define EXPAND_(M) #M
+#define EXPAND(M) EXPAND_(M)
 
 static void report(const fatype &fa) {
     int nstrings = count(fa);
@@ -35,7 +37,11 @@ static void rollover(std::string *s) {
 
 int main(int argc, char **argv) {
     if (2 != argc || !strcmp(argv[1], "-h")) {
-        std::cerr << "usage: " << argv[0] << " <length>" << std::endl;
+        // Provide type information for double-checking type.
+        std::cerr << "usage: " << argv[0] << " <length>\n"
+            "automaton type: " EXPAND(FA_TYPE) "\n"
+            "weight type: " << fatype::Weight::Type()
+            << std::endl;
         exit(1);
     }
     int length = strtol(argv[1], nullptr, 10);

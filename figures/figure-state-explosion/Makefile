@@ -1,14 +1,19 @@
 .SECONDARY:
 .DELETE_ON_ERROR:
 
-all : plots/states2.pdf
+AUTOMATA_TYPES := boolfa logfa ratfa
+DATA_FILES := $(addprefix data/,$(addsuffix .csv.gz,$(AUTOMATA_TYPES)))
 
-plots/states.pdf : code/plot-states.R
-	Rscript $<
+all : plots/states3.pdf
+
+plots/states3.pdf : code/plot.R $(DATA_FILES)
+	Rscript $< $@
 
 mytheme.R : ../figure-lang-distinction/mytheme.R
 	ln -s $< 
 
-plots/states2.pdf : code/plot-states-2.R | mytheme.R
-	Rscript $< $@
+$(DATA_FILES): | ../../wfsms/targets
+	../../wfsms/targets/$(subst .csv.gz,,$(@F))_compress 6 | gzip > $@
 
+../../wfsms/targets:
+	make -C ../../wfsms
