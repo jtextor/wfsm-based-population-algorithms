@@ -3,7 +3,7 @@
 Final version of this paper, to be submitted as such before June 22nd.
 
 TODO:
-- [ ] Replicate all of the results from scratch by `make` invocation
+- [X] Replicate all of the results from scratch by `make` invocation
     - [X] Fig. 2B
     - [X] Fig. 3A
     - [X] Fig. 3B
@@ -18,8 +18,8 @@ TODO:
 - [X] Acknowledge Vidi grant and disclose interest
 - [X] Page numbers?
 - [ ] Remove unused text and references from manuscript
-- [ ] Remove unused figures
-- [ ] Rename figure folders after their in-text reference
+- [X] Remove unused figures
+- [X] Rename figure folders after their in-text reference
 - [ ] Replace this text by final text and build instructions
 - [X] Address definition 1: r-Hamming matching
 - [X] Address complaint that symbols are used before their definition

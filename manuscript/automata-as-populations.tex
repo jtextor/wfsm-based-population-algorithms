@@ -7,6 +7,8 @@
 \usepackage[ruled]{algorithm2e} % For algorithms
 \usepackage{stix}
 
+\graphicspath{{../figures/}}
+
 \newcommand{\text}[1]{\textrm{#1}}
 \bibliographystyle{splncs04}
 
@@ -263,9 +265,9 @@ depends on the matching rule that is used.
 \begin{figure}[t]
   \begin{tabular}{p{0.5em}@{}cp{0.5em}@{}c}
     \raisebox{-\height}{A} &
-    \raisebox{-\height}{\includegraphics{figures/drawing.eps}}
+    \raisebox{-\height}{\includegraphics{figure-1/drawing.pdf}}
     \raisebox{-\height}{B} &
-    \raisebox{-\height}{\includegraphics{figures/wfsm-table.eps}}
+    \raisebox{-\height}{\includegraphics{figure-1/wfsm-table.pdf}}
   \end{tabular}
   \caption{
     FSMs as compact representations of sets of strings.
@@ -330,9 +332,9 @@ using a simple task.
   \centering
   \begin{tabular}{p{0.5em}@{}cp{0.5em}@{}c}
     \raisebox{-\height}{A} &
-    \raisebox{-\height}{\includegraphics{figures/diagram.eps}} &
+    \raisebox{-\height}{\includegraphics{figure-2/diagram.pdf}} &
     \raisebox{-\height}{B} &
-    \raisebox{-\height}{\includegraphics{figures/states3.pdf}}
+    \raisebox{-\height}{\includegraphics{figure-2/plots/states3.pdf}}
   \end{tabular}
   \caption{
     Exact arithmetic helps keeping WFSMs small.
@@ -532,8 +534,7 @@ $t = 2,3,4$ now giving very similar performances throughout a range of input siz
 
 \begin{figure}[t]
   \centering
-	%\includegraphics{figures/figure-string-distinction/plots/analysis.pdf}
-   \includegraphics[width=0.47\textwidth]{figures/bitstring-mu-ntrain.pdf}\includegraphics[width=0.47\textwidth]{figures/bitstring-t-n.pdf}
+   \includegraphics[width=0.47\textwidth]{figure-3/plots/bitstring-mu-ntrain.pdf}\includegraphics[width=0.47\textwidth]{figure-3/plots/bitstring-t-n.pdf}
 
    \caption{
 	Weighted and unweighted positive selection on the noisy bitstring problem. Throughout, AUC 
@@ -595,8 +596,7 @@ there, such as when comparing English to more English. %% (e.g., in the case com
 
 \begin{figure}[t]
   \centering
-	%\includegraphics{figures/figure-string-distinction/plots/analysis.pdf}
-   \includegraphics[width=\textwidth]{figures/fig4.pdf}
+   \includegraphics[width=\textwidth]{figure-4/plots/fig4.pdf}
    \caption{ 
    Language anomaly detection performance of a positive selection algorithm drops for 
    large training sets and is rescued by adding weights. 3-grams were extracted from 
@@ -801,16 +801,15 @@ algorithm is not fixed.
 
 \begin{figure}[t]
   \centering
-  %%    \includegraphics[width=0.47\textwidth]{figures/figure-genetic-algorithms/wfsm-ea.pdf}
   \begingroup
   \renewcommand{\arraystretch}{0.0}
   \begin{tabular}{p{5pt}@{}cp{5pt}@{}c}
     \raisebox{-\height}{A} & %
-    \multicolumn{3}{c}{\raisebox{-\height}{\includegraphics{figures/constraints-over-time.pdf}}} \\
+    \multicolumn{3}{c}{\raisebox{-\height}{\includegraphics{figure-5/plots/constraints-over-time.pdf}}} \\
     \raisebox{-\height}{B} & %
-    \raisebox{-\height}{\includegraphics{figures/populationsize-over-time.pdf}} & %
+    \raisebox{-\height}{\includegraphics{figure-5/plots/populationsize-over-time.pdf}} & %
       \raisebox{-\height}{C} & %
-      \raisebox{-\height}{\includegraphics{figures/evaluations-over-time.pdf}}
+      \raisebox{-\height}{\includegraphics{figure-5/plots/evaluations-over-time.pdf}}
   \end{tabular}
   \endgroup
   \caption{
