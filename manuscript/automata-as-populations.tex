@@ -16,7 +16,6 @@
  Built on Weighted Automata}
 %
 \titlerunning{Automata as compressed populations}
-%% \titlerunning{}
 
 \author{Gijs Schr\"oder\inst{1}\orcidID{0000-0001-6803-3237} \and Inge Wortel\inst{1}\orcidID{0000-0003-3362-5229}  \and Johannes~Textor\inst{1}\orcidID{0000-0002-0459-9458}}
 
@@ -24,7 +23,6 @@
 Nijmegen, The Netherlands \\ \email{\{gijs.schroeder,inge.wortel,johannes.textor\}@ru.nl} }
 
 \authorrunning{G. Schr\"oder et al.}
-%\and \email{inge.wortel@ru.nl} \and \email{johannes.textor@ru.nl}}
 
 \begin{document}
 
@@ -54,7 +52,7 @@ algorithms such as learning classifier systems.
 
 \section{Introduction}
 
-Many algorithms in computer science perform a search, optimization, or learning procedure by maintaining and evolving a set of points in some kind of search space. Such \emph{population-based} algorithms \cite{Blum_2003} encompass nature-inspired metaheuristics like evolutionary algorithms (EAs) \cite{Jansen2013}, ant colony optimization \cite{Blum2005}, particle swarm optimization \cite{Gad2022}, and artificial immune systems \cite{Timmis2004}, but are not only used in natural computing: various more classical algorithms such as the approximate Bayesian computation method for parameter inference \cite{Sisson2007} %% , Markov Chain Monte Carlo methods,
+Many algorithms in computer science perform a search, optimization, or learning procedure by maintaining and evolving a set of points in some kind of search space. Such \emph{population-based} algorithms \cite{Blum_2003} encompass nature-inspired metaheuristics like evolutionary algorithms (EAs) \cite{Jansen2013}, ant colony optimization \cite{Blum2005}, particle swarm optimization \cite{Gad2022}, and artificial immune systems \cite{Timmis2004}, but are not only used in natural computing: various more classical algorithms such as the approximate Bayesian computation method for parameter inference \cite{Sisson2007}
 or simulated annealing can also be viewed as population-based.
 
 This paper focuses on populations that can be represented as sets of strings with associated weights, such as, for instance, EAs with real-valued fitness functions. We ask a simple question: how can we efficiently implement such algorithms when the population sizes are very large -- say, in the millions? While small populations are fine in some cases (even a simple 1+1-EA  successfully solves many problems), large populations can be required to tackle complex, high-dimensional problems in many areas, such as anomaly detection by immune-inspired classifier systems \cite{Stibor2005}. 
@@ -72,10 +70,7 @@ offer the following contributions:
 edge weights (Section~\ref{sectionfsms}). This approach allows us to augment the compressed population with important information such as multiplicity or fitness. 
 \item We use WFSMs to implement a weighted version of positive selection, a key AIS classification algorithm, and show that the addition of weights can lead to higher accuracy and robustness compared to the unweighted baseline (Section~\ref{sectionempirical}).
 \item We use WFSMs to implement an EA that solves the Boolean satisfiability problem (Section~\ref{sectionwaga}).
-%this approach to define weighted versions of positive and negative selection, two of the most important AIS algorithms, and show that the addition of weights can lead to higher accuracy and robustness compared to unweighted baselines (Section~\ref{sectionempirical});
 
-%\item Show how weighted positive and negative selection can be implemented efficiently by using compressed repertoire representations based on weighted FSMs (Section~\ref{sectionfsms});
-%\item Illustrate the potential benefit of using weights by comparing the performance of weighted versus unweighted repertoire models on simple string-based anomaly detection problems (Section~\ref{sectionempirical}).
 \end{enumerate}
 
 
@@ -86,7 +81,6 @@ We have implemented our WFSM-based algorithms in C++, making heavy use of the li
 \label{sectionbackground}
 
 We consider strings $x$ over some finite alphabet $\Sigma$.
-%Lowercase Latin letters denote strings.
 E.g., $x=0010 \in \{0,1\}^4$ is a string consisting of 4 binary characters and $x_3=1$ is its third character.
 The symbol $\ell$ is always the length of some string.
 We write $|S|$ to denote the cardinality of a set $S$.
@@ -99,7 +93,7 @@ Unweighted populations are interchangeable with weighted populations with unit w
 The weights can have different interpretations:
 positive integer weights could be used to simply store multiplicity of individuals in the population,
 whereas fractional weights could represent each individual's importance or fitness.
-Weights in the interval $(0,1]$ could represent probabilities of being present in the set.%%  that each element is actually present in the set.
+Weights in the interval $(0,1]$ could represent probabilities of being present in the set.
 
 In the following, let $(S, w_S)$, $(T, w_T)$, and $(U, w_U)$ each be weighted populations.
 For simplicity, let $w_A(x)=0$ if $x \notin A$ and let $f = g \star h$ denote $f(x) = g(x) \star h(x)$, where $\star$ is any operation.
@@ -111,14 +105,6 @@ $S \uplus T = U$ is the \emph{sum} of $S$ and $T$, where $U = S \cup T$ and $w_U
 $S \capdot T = U$ is the \emph{product} of $S$ and $T$, where $U = S \cap T$ and $w_U = w_S \times w_T$.
 
 $S \setminus T = U$ is the \emph{set difference} of $S$ and $T$, where $U = S \setminus T$ and $w_U = w_S$.
-
-%% This notation is chosen to be distinct from set operations where possible.
-
-%We define these three operations in particular,
-%because they correspond closely to known constructions on weighted finite state machines ().
-
-%% We include a definition of WFSMs for completeness,
-%% but note that it can be safely skipped on a first reading.
 
 A \emph{weighted finite state machine} (WFSM) over an alphabet $\Sigma$ and a semiring $\mathbb{K}$ is a 6-tuple $M = (Q, E, \sigma, k, q_0, F)$,
 where $(Q,E)$ is a directed graph of states as vertices,
@@ -139,7 +125,7 @@ state are labeled with the same character.
 A deterministic WFSM is called \emph{minimal} if it has the least
 number of states out of all deterministic WFSMs accepting the same
 language and weights.
-To \emph{minimize} a deterministic WFSM is to find a corresponding minimal WFSM. %% $M$ is to find a minimal WFSM accepting $\mathcal{L(M)}$ with weights $w_M$.
+To \emph{minimize} a deterministic WFSM is to find a corresponding minimal WFSM.
 
 Ordinary FSMs without weight can be recovered from WFSMs by
 substituting for $\mathbb{K}$ the two-element Boolean algebra.
@@ -151,63 +137,31 @@ weighted variants of union, intersection, and difference constructions.
 Restricting ourselves to deterministic WFSMs,
 we can compress these WFSMs by minimization.
 
-%% Define a \emph{path} to be a sequence of states, $q_1 \ldots q_\ell$,
-%% such that $q_i \to q_{i+1} \in E$ for each $i$ in $1 \ldots \ell-1$.
-%% An \emph{accepting path} has both both $q_1 \in I$ and $q_\ell \in F$.
-%% For such paths, $x = a(q_1 \to q_2) \ldots a(q_{\ell-1} \to q_\ell)$ is in $L$.
-%% Define $P(x)$ to be the set of accepting paths that are labeled by the string $x$.
-%% Then the weight of $x$ is $w(x) = \bigoplus_{\pi \in P(x)} \bigotimes_{i=1}^\ell b(q_i \to q_{i+1})$,
-%% with $\oplus$ and $\otimes$ being addition and multiplication in $\mathbb{K}$.
-
-
-%% A WFSM $M=(Q,E,c,w,q_s, Q_F)$ over an alphabet $\Sigma$ and a semiring $\mathbb{K}$ consists of a 
-%% directed graph $G=(Q,E)$ linking states $q \in Q$ where the state $q_s \in Q$ is called the 
-%% \emph{initial (starting) state} and the states $Q_F \subseteq Q$ are called the 
-%% \emph{accepting (final) states}. 
-%% The edges \emph{(transitions)} $q_i \to q_j \in E$  are labeled by 
-%% characters $c : E \mapsto \Sigma$ and weights $w : E \mapsto \mathbb{K}$. 
-
-
-%% Throughout this paper, the term \emph{population} refers to a set of strings -- e.g., the genotypes in an evolutionary algorithm.
-    %% A \emph{weighted population} consists of a population $S$ and a mapping $w : S \to \mathbb{R}$, though we implement this $w$ with a rational representation for reasons explained below.
-    %% where $\mathcal{W}$ is a set of weights; typical examples are $\mathcal{W} = \mathbb{R}$ or $\mathcal{W} = \mathbb{Z}$, although throughout  this paper, we will use $\mathcal{W} = \mathbb{Q}$ for reasons explained below.
-
 \subsection{Compressing unweighted populations}
 
 \label{sectionunweightedrep}
 
 We now briefly review the existing approach from the AIS field where finite state machines
 (FSMs) are used as compressed representations of populations.
-This review %% is important to 
-delineates what this approach %% the existing approach
-can already accomplish and where it currently falls short.
+This review delineates what this approach can already accomplish and
+where it currently falls short.
 
-The AIS algorithms we will consider are classifiers 
-%that can alternatively be thought of as very 
-%simple learning classifier systems. They 
-that are based on populations of so-called 
-%
-%We use the term \emph{repertoire model} in this paper to denote a type of AIS that is 
-%loosely based on T~cell and B~cell receptor repertoires in the real immune system. 
-\emph{detectors},
-%% (also called patterns)
-where each detector is a string that represents
-a small part of a set $\mathcal{U}$ (universe) of objects to classify. By extension, detector populations can therefore 
-represent  (``cover'') subsets of $\mathcal{U}$. Although this framework is general and allows 
-$\mathcal{U}$ to be any set, in this paper we focus on strings over some alphabet 
-$\Sigma$, where each string consists of $\ell$ characters ($\mathcal{U}=\Sigma^\ell$).
-
-% since the generalization of our framework to variable-length 
-%strings is reasonably straightforward. 
+The AIS algorithms we will consider are classifiers that are based on
+populations of so-called \emph{detectors},
+where each detector is a string that represents a small part of a set
+$\mathcal{U}$ (universe) of objects to classify.
+By extension, detector populations can therefore represent (``cover'')
+subsets of $\mathcal{U}$.
+Although this framework is general and allows $\mathcal{U}$ to be any
+set, in this paper we focus on strings over some alphabet $\Sigma$,
+where each string consists of $\ell$ characters
+($\mathcal{U}=\Sigma^\ell$).
 
 In addition to the \emph{universe}: $\mathcal{U}$ that represents the objects to be classified, we define a set of \emph{detectors} $\mathcal{D}$; possibly $\mathcal{U}=\mathcal{D}$. A \emph{matching function} $m : \mathcal{D} \mapsto 2^\mathcal{U}$, where $2^\mathcal{U}$ denotes the powerset of $\mathcal{U}$, associates every detector with the elements it recognizes. We define the inverse matching function $m^{-1} : \mathcal{U} \mapsto 2^\mathcal{D}$ as $m^{-1}(x) = \{ d \in \mathcal{D} \mid x \in m(d) \} $. In this setting, a population is simply a subset of $\mathcal{D}$. 
 
 \begin{definition}[Matching rules]
 Given an alphabet $\Sigma$ and a string length $\ell$, we define the following matching rules:
 \begin{enumerate}
-%% \item \emph{Wildcard pattern matching:} considers a wildcard symbol $\# \notin \Sigma$ 
-%% and sets $\mathcal{U}=\Sigma^\ell, \mathcal{D}=\Sigma \cup \{\#\}^\ell$. 
-%% Then $m(x) = \{ y \in \mathcal{U} : \forall i \in \{1,\ldots,n\} : x_i \in \{ y_i, \# \} \}$. 
  \item \emph{r-Contiguous matching:}  $\mathcal{U}=\mathcal{D}=\Sigma^\ell$, $m_r(x)=\{y \in \mathcal{U} : \exists i \in \{1,\ldots,\ell-r+1\} : \forall j \in \{i,\ldots,i+r-1\} : x_j = y_j \}$; in words, $x$ and $y$ have at least $r$ identical
 consecutive characters. 
  The parameter $r$, called \emph{matching radius}, controls the number of strings each 
@@ -217,7 +171,7 @@ consecutive characters.
 in words, $x$ and $y$ have at most $r$ non-identical characters.
 Here, increasing the matching radius $r$ means matching more strings.
 \end{enumerate}
-\label{definitionmatchingrules} % 2 references
+\label{definitionmatchingrules}
 \end{definition}
 
 Using any such matching rule, we can build classification algorithms based on detector 
@@ -241,11 +195,10 @@ is a set of detectors that do not match any input string.
 \end{enumerate}
 
 A negatively (positively) selected population $P$ is \emph{maximal} if there is no strict superset of $P$ that is also negatively (positively) selected with respect to the same input $S$. Given a population $P$ and an element $t \in \mathcal{U}$, we define the \emph{scoring function} $P(y) =  |P \cap m^{-1}(y)|$ as the number of detectors in $P$ that match $y$. 
-\label{definitionposnegsel} % 2 references
+\label{definitionposnegsel}
 \end{definition}
 
-For a positively selected population, the scoring function can be understood as a \emph{normalcy score} (a high value $P(y)$ means that $y$ is ``similar to'' $S$) whereas for negative selection, the interpretation is the opposite (\emph{anomaly score}). The scores output by a positively or negatively selected population can be used for threshold-based classification. Note that we did not define which specific detectors are used, only which detectors \emph{could} be in the population. A simple method is generating detectors by rejection sampling. However, depending on the input, rejection rates can be high \cite{Dhaeseleer1996,Dhaeseleer1996b}, while at the same time huge populations can be required to achieve acceptable classification results %% can be exponential in the input
-\cite{Stibor2005}. 
+For a positively selected population, the scoring function can be understood as a \emph{normalcy score} (a high value $P(y)$ means that $y$ is ``similar to'' $S$) whereas for negative selection, the interpretation is the opposite (\emph{anomaly score}). The scores output by a positively or negatively selected population can be used for threshold-based classification. Note that we did not define which specific detectors are used, only which detectors \emph{could} be in the population. A simple method is generating detectors by rejection sampling. However, depending on the input, rejection rates can be high \cite{Dhaeseleer1996,Dhaeseleer1996b}, while at the same time huge populations can be required to achieve acceptable classification results \cite{Stibor2005}. 
 
 These issues motivated the development of population compression 
 techniques \cite{Elberfeld_2009,Elberfeld2011}.
@@ -288,8 +241,6 @@ can instead just directly use maximal detector populations \cite{Textor2012,Text
 Interestingly, although positive and negative selection using randomly generated detectors can give different 
 results, for many matching rules this is not the case when maximal detector sets are used.
 
-%\newtheorem{remark}{Remark}
-
 \begin{remark}
 For the matching rules in Definition~\ref{definitionmatchingrules}, 
 positive and negative selection with maximal detector sets are equivalent classifiers.
@@ -299,9 +250,8 @@ positive and negative selection with maximal detector sets are equivalent classi
 \begin{proof}
 If $P^+$ and $P^-$ are the maximal positively and negatively selected detector populations w.r.t. an input $S$, 
 then we have $P^+ \cup P^- = \mathcal{D}$ and therefore 
-%$(D^+\cap m^{-1}(t)) \cup (D^-\cap m^{-1}(t)) =  m^{-1}(t)$. Therefore 
-$|P^+ \cap m^{-1}(y)|
-+ |P^- \cap m^{-1}(y)|=|m^{-1}(y)|$. Since $|m^{-1}(y)|$ is the same value for all $y \in \mathcal{U}$ 
+$|P^+ \cap m^{-1}(y)| + |P^- \cap m^{-1}(y)|=|m^{-1}(y)|$.
+Since $|m^{-1}(y)|$ is the same value for all $y \in \mathcal{U}$ 
 for the matching rules in Definition~\ref{definitionmatchingrules}, the scoring function of negative 
 selection is a constant minus the scoring function of positive selection, and vice versa.
 \end{proof}
@@ -490,7 +440,7 @@ Flip $x'$ randomly chosen bits of $c$ and return the result.
 In particular, $X(c,0)$ is always $c$, and $X(c,1)$ is always the bitwise
 complement of $c$. 
 
-One fuzzy classification problem is defined by%% the following 
+One fuzzy classification problem is defined by
 membership functions $f_0$ and $f_1$:
 $$
 f_0( x ) = \text{Prob}( X(0^\ell,\mu)=x ) ; f_1( x ) = \text{Prob}( X(1^\ell,\mu)=x ) 
@@ -545,11 +495,6 @@ $t = 2,3,4$ now giving very similar performances throughout a range of input siz
 	$t$ (C, D). Dashed lines in (A,B) highlight the same parameter combination.
 	Arrows represent the values of $\mu$ and $N$ for which the expected number of strings 
 	with a majority of foreign bits in a training  sample exceeds 1. 
-	%Performance of positive selection with versus without weights
-	%on the noisy bitstring problem using $n=8, \mu=0.6$ and $3$-contiguous matching. 
-	%Ten simulation runs per training sample size
-	%were performed. AUC was evaluated on a further 100 random samples per class.
-	%Lines and shading show mean $\pm$ standard error of the mean.
   }
   \label{figurestringdistinction}
 \end{figure}
@@ -577,7 +522,7 @@ as well as $\sim$800,000 English strings from the King James bible for training.
 From these data, we extracted 3-letter strings, and used our WFSM-AIS to perform both weighted 
 and unweighted positive selection trained on randomly sampled inputs of up to 50,000 English 
  strings. When detecting Latin among English strings, we found that weighted 
-positive selection outperforms %% once again started to outperform
+positive selection outperforms
 its unweighted counterpart at large input sizes (Figure~\ref{figurelang}A,B). 
 
 The input size where unweighted selection starts to perform badly depended on the 
@@ -591,8 +536,7 @@ Similar results were observed when substituting different languages for the
 anomalous strings (Figure~\ref{figurelang}C). The size of the effect depended on the 
 general similarity between English and the ``anomalous'' language considered -- in line
 with the intuition that adding weights should not help learn a difference that is not 
-there, such as when comparing English to more English. %% (e.g., in the case comparing English versus more English or 
-%% medieval English).
+there, such as when comparing English to more English.
 
 \begin{figure}[t]
   \centering
@@ -624,19 +568,6 @@ kind of algorithm.
 We design a simple EA that we apply to solve
 Boolean satisfiability problems.
 
-%% %% These problems were the first to be proven NP-complete.
-%% Any such formula can be quickly transformed to an equisatisfiable
-%% formula in \emph{conjunctive normal form} with three variables per clause.
-%% We consider problems of this form.
-
-%% Such a problem may look like so:
-%% $(\mskip 1mu\overline x_1 \lor x_2 \lor \overline x_3) \land (\mskip 1mu\overline x_1 \lor x_2 \lor x_3)$.
-%% Both $\overline x_1 \lor x_2 \lor \overline x_3$ and
-%% $\overline x_1 \lor x_2 \lor x_3$ are \emph{clauses} of the problem.
-%% Out of eight possible truth assignments for the variables in some
-%% clause,
-%% seven do satisfy that same clause and one does not.
-
 The Boolean satisfiability problem is to decide whether a given
 Boolean formula has a truth assignment over its
 variables such that the formula is satisfied.
@@ -645,9 +576,6 @@ we define these problems as a set of $n$ \emph{clauses},
 where each clause is a set of \emph{literals},
 with literals being integers in $1, \ldots, \ell$ or
 $-1, \ldots,-\ell$.
-%% ,
-%% corresponding respectively to nonnegated and negated occurences of \emph{variables}
-%% $1, \ldots, \ell$.
 A \emph{truth assignment} $x$ is a string in $\{0,1\}^\ell$.
 Such an $x$ \emph{satisfies} a clause $c$ when there is some literal $l$
 in $c$, such that $x_{|l|}$ is $1$ if $l$ is positive and $0$ if negative.
@@ -655,70 +583,10 @@ Otherwise, the clause is \emph{falsified}.
 If there is an $x$ that satisfies all of a problem's clauses,
 then the problem is \emph{satisfiable}.
 
-%% A constraint satisfaction problem is to find,
-%% given a Boolean formula in conjunctive normal form over a set of
-%% variables $V = \{ v_1, \ldots, v_\ell \}$,
-%% a \textit{truth assignment} $t : V \mapsto \{\top,\bot\}$ that satisfies
-%% the formula.
-%% For example,
-%% $(v_1 \lor \overline{v_2}) \land v_2$ is such a formula over
-%% $V=\{v_1,v_2\}$ and the only truth assignment that satisfies it is
-%% $t(\cdot)=\top$.
-%% We model truth assignments with strings over $\Sigma=\{\bot, \top\}$
-%% by corresponding to each string $x$ in $\Sigma^\ell$ a truth
-%% assignment $t_x(v_i) = x_i$, i.e., the $i$th letter in $x$ is the value for the $i$th variable of the problem.
-
 Most Boolean satisfiability problems are NP-hard, but some randomized 
 search heuristics, such as the WalkSAT algorithm \cite{Schoning99}, 
 perform decently. In the next section, we use WFSMs to
 devise a novel approach to tackle such problems.
-
-%% \subsection{The farthest string problem}
-%% \subsection{Satisfiability}
-%% \label{fartheststring}
-
-%% The problem is stated as follows: given a set of $n$ strings of length $\ell$ over an alphabet
-%% $\Sigma$, find another string $s^*$ that has a Hamming distance of at least $k$ to each
-%% input string. The farthest string problem is NP-hard \cite{KevinLanctot2003}. 
-
-%% A simple 1+1-EA \cite{Droste_2002} for the farthest string problem could use the
-%% following fitness function for
-%% a string $s \in \Sigma^\ell$: 
-%% $$
-%% w(s) = | \{ s_i : d_H( s, s_i )  \geq k | \} |
-%% $$
-%% where $d_H$ denotes the Hamming distance
-%% $$
-%% d_H( x, y ) = | \{ i : x_i \neq y_i \} | \ .
-%% $$
-
-%% Even though the farthest string problem is NP-hard in general,
-%% not all instances of it are challenging to solve.
-%% To ensure ourselves of challenging problems,
-%% we encoded satisfiability problems known to be difficult as farthest
-%% string problems.
-
-%% This encoding of satisfiability problems to farthest string problems
-%% is accomplished by rewriting the clauses to input strings whose
-%% Hamming neighborhoods must be avoided.
-%% A 3-CNF formula on $\ell \geq 3$ variables containing $n$
-%% clauses can be encoded as a farthest string instance $s_1, \ldots, s_n $ according to this equation:
-%% $$
-%% s_{ij} = \cases{%
-%%   0 & if variable $i$ appears in clause $j$ \cr%
-%%   1 & if variable $i$ appears negated in clause $j$ \cr%
-%%   2 & otherwise
-%% }
-%% $$
-%% %% $$
-%% %% s_{ij} = \begin{cases}
-%% %% 0 & \text{ variable } $i$ \text{ appears in clause } $j$ \\
-%% %% 1 & \text{ variable } $i$ \text{ appears negated in clause } $j$ \\
-%% %% 2 & \text{ otherwise }
-%% %% \end{cases}
-%% %% $$
-%% It can be verified that a binary string $s^*$ with $d_H( s^*, s_i ) \geq \ell-2$ for all $i$ encodes a 
-%% satisfying assignment of the input formula \cite{KevinLanctot2003}.
 
 \subsection{A WFSM-based algorithm for Boolean satisfiability problems}
 
@@ -728,7 +596,6 @@ In each step, each letter $x$ is changed to a random other letter with
 mutation probability $p_m$, and $x$ is replaced by $x'$ if $w(x') > w(x)$. Though simple, the 1+1-EA
 can be very effective, and more sophisticated EAs do not necessarily outperform it 
 \cite{Borisovsky_2008}. 
-%This is why we use the 1+1-EA as a baseline for our analyses.
 However, a potential issue for the 1+1-EA on satisfiability problems is 
 the \emph{glassiness} of the solution space that some problems can exhibit \cite{Martin_2001}.
 Glassy problems have a rugged fitness landscape full of local minima, which the 
@@ -762,19 +629,14 @@ constructed WFSM that accepts strings that falsify $c_i$.
 
 \Output{A string satisfying all clauses.}
 
-%$L_1, \ldots, L_n \gets$ set of strings that satisfy $c_1, \ldots, c_n$ \\
 \For{$i \in 1, \ldots, n$}{ 
   $L_i \gets \Sigma^\ell \setminus \{x : x \text{ falsifies } c_i\}$ \\
-  %a WFSM accepting strings that satisfy $c_i$, unit weights \\
 }
-%$s \gets$ sampled string from $L_1 \cup \ldots \cup L_n$
 $s \gets$ sampled string from one of the $L_i$ \\
-%$P \gets (S_1 \cap \{s\}) \cup \ldots \cup (S_n \cap \{s\})$
 $P \gets \biguplus_{i=1}^n \left( L_i \capdot \{s\} \right)$ \\
 \While{heaviest string in $P$ weighs less than $n$}{
   $s \gets$ sampled string from $P$ \\
   $B \gets$ Hamming ball around $s$ with radius $r$, unit weights \\
-  %$E \gets (S_1 \cap H) \cup \ldots \cup (S_n \cap H)$
   $E \gets \biguplus_{i=1}^n \left( L_i \capdot B \right)$ \\
   $P \gets (P \setminus E) \uplus E$ \\
   $P \gets \text{prune}(P, p)$
@@ -782,10 +644,6 @@ $P \gets \biguplus_{i=1}^n \left( L_i \capdot \{s\} \right)$ \\
 output heaviest string in $P$
 \label{algorithmweightedea}
 \end{algorithm}
-
-%% For the farthest string problems outlined in section~\ref{fartheststring},
-%% we take complements of the automata accepting the Hamming ball with radius $k-1$
-%% around each constraint string.
 
 Algorithm~\ref{algorithmweightedea} outlines an FSM-based EA
 that capitalizes on this idea.
@@ -937,7 +795,6 @@ to call minimization after every union to keep FSM size manageable. % for exampl
 %such that minimization keeps the WFSM at minimal size. Yet this comes at a cost of 
 %potential loss of precision that is not important when performing only a few operations, 
 %but can rapidly compound to massive issue when many operations are performed 
-%(Figure~\ref{figurefpvsrationals}). 
 Second, handling weights in WFSMs proved to be more challenging than we
 anticipated. Our use of exact rational algebra proved critical to get our WFSM-AISs 
 to work even on small  input samples -- without it, even populations trained on as 
@@ -985,165 +842,3 @@ system.
 \bibliography{references}
 
 \end{document}
-
-
-
-
-%%% OLD PARTS THAT ARE NO LONGER USED
-
-
-\section{Conclusion}
-
-AIS were originally invented in the 1990s, a time in which modern ML/AI technology did not 
-yet exist, and anomaly detection problems -- especially sequence-based ones -- were hard to 
-solve. Nowadays with sequence-based end-to-end learning and transformers, anomaly detection
-in sequence data can be approached using state-of-the-art neural network models. Such models
-can scale to millions or billions of parameters to learn semantic features of large sequence datasets.
-Despite our  contributions in this paper, AIS models are not yet optimized anywhere nearly as well. Crucially, 
-such approaches are gradient-based, whereas AIS remains essentially a grandient-free approach.
-Even before all this, Stibor wrote already in 2006 that 
-(negative selection) ``was thoroughly explored'' and that ``future work in this direction is not meaningful''
-\cite{Stibor2006}. Why, then, still bother with AIS? 
-
-We do agree that AIS is unlikely to become a competitive technology for anomaly detection 
-in sequence data anytime soon. We disagree, however, that AIS has been ``thoroughly explored''.
-For example, our simple experiments with noisy classification problems in Section~\ref{sectionempirical}
-have revealed a new fundamental issue with the decades-old negative selection algorithm
-\footnote{Technically, we showed these results for positive selection, but the results for
-negative selection would be the same (Remark~\ref{remarkbotharethesame}).}: its performance degrades when the input data becomes too large.
-This fundamental issue has (to our knowledge) 
-never been pointed out before, possibly because without FSM-based AISs, it has not 
-been possible to build systems of the scale required to even allow processing of inputs of this size. 
-This shows how we need to build such systems at scale to fully understand their properties.
-
-Currently, the most important motivation to carry out this work
-is to study the information processing capacity of the immune system itself, which remains
-incompletely understood. For example, recent data cast substantial doubt on 
-the long-standing immunological theory of negative selection, which the eponymous algorithm
-is based on. Repertoire models have been instrumental to place these new findings into context
-and to develop a more fine-grained understanding of the function of selection processes in
- the thymus. Again, such models need to be large-scale to be useful, because real immune
-systems contain many millions to billions of cells.
-
-Beyond computational immunology, we are intrigued by the fact that the close similarity of AIS
-repertoire models and learning classifier systems (LCS) has not been explored further. LCS 
-have similar issues as AIS around scale and (doubts about) usefulness, although LCS are typically
-used in a reinforcement learning setting where the ability to process very large sets of input
-data is not immediately critical. While the AISs we considered in this paper focused mostly 
-on the initial stages of repertoire development -- positive and negative selection -- the processes
-occurring throughout an individual's lifetime are more akin to reinforcement learning: pathogens
-are recognized, eliminated and memorized through an evolution-like process, which in the case
-of B~cells also involves mutation of the repertoire sequence and fitness-based selection
-(affinity maturation). Therefore, we feel that (repertoire-based) AISs should ultimately 
-be seen as a special case of LCS. We hypothesize that the WFSM framework developed in this paper 
-should be equally useable to increase the scale of LCS such that richer, more interesting problems
-can be studied. We hope that the insights gleaned from such work will allow us to better understand 
-parallel distributed information processing systems in Nature, including but not limited to the immune 
-system.
-
-
-
-
-
-
-%\subsection{Motivation and prior work}
-% Diversity 
-Artificial neural networks that underlie the rapid advances in AI/ML in recent years, 
-from convolutional neural networks to transformers, 
-were originally inspired by computational models of the human brain. Intriguingly, our bodies contain a 
-second complex adaptive information-processing system that learns through an entirely
-different mechanism: the immune system. Unlike the brain, which derives its complexity 
-from connections between cells of the same type, the immune system's pattern 
-recognition cells -- B and T~cells -- are much more diverse, mainly due to specific 
-genetic machinery that randomly generates parts of their DNA sequence. For example, 
-the number of different T~cells that can be made due to this mechanism is estimated 
-to be in the range of $10^{15}$ to $10^{20}$ \cite{Zarnitsyna2013}, many orders of 
-magnitude more than the number of bits stored in the human genome. Each of us harbors
- only around $10^{11}$ T~cells, a small fraction of what can be realized, meaning that many of our T~cells are fairly unique in the population. This large and diverse amount of cells is very expensive to make (the entire process takes until adulthood in humans) and to maintain. Why is such a large number of cells necessary?
-
-%Specificity 
-Each adaptive immune cell specializes on recognizing very specific molecular patterns 
-called \emph{epitopes}. For T~cells, the epitopes are short amino acid sequences (peptides) 
-that originate as waste products from every cell's protein degradation machinery. 
-Specifically, the CD8$^+$ subpopulation of T~cells recognizes epitopes about 9 amino acids 
-long, and the CD4$^+$ subpopulation recognizes longer peptides in the range of 12-14 
-amino acids. For any given peptide, the fraction of T~cells in the immune system that will 
-recognize it is thought to be on the order of 10$^{-5}$ \cite{Blattman2002}. 
-Since immune cells need to protect us from a vast amount of pathogens, some of which may not 
- even exist yet, they need to completely cover the space of possible antigens. 
- This is why so many cells need to be made and maintained. 
- \footnote{This energy expense is even more costly for smaller animals such as mice. 
- A mouse consists of ~$3\times 10^9$ cells and  ~$10^8$ of these -- or 5-10\% of the 
- entire animal -- are adaptive immune cells.}
-
-% Negative selection algorithms
-Computer scientists have long been interested in the computational properties and 
-capacities of the immune system, and particularly of its adaptive arm, starting with 
-pioneering work by Stephanie Forrest, Alan Perelson, and others in the 
-1990s \cite{Forrest1990,Percus1993}. Algorithmic models of the immune system -- 
-now called \emph{artificial immune systems} (AIS) -- are often built around the notion 
-of large \emph{repertoires} (sets) of small, specific classifiers called \emph{detectors} 
-or \emph{patterns}, a property shared with more generic \emph{learning classifier systems} 
-(LCS) \cite{Wilson1994}. One of the earliest AISs, Forrest's negative selection algorithm \cite{Forrest1994}, 
-was based on the ``education'' of T~cells during negative selection in the thymus: 
-upon randomized rearrangement of their receptor sequence, T~cells get shown ``normal'' 
-peptides from the host's cells, and those that respond to one of these normal ``self'' 
-peptides are killed. This simple process was thought to ensure that T~cells react only 
-to the ``nonself'' peptides that would arise, for example, when cells get infected by a 
-virus or mutate and become cancerous. More recent data has now cast some doubt on this 
-However, the negative selection algorithm still works in principle, and AISs have also 
-been used in computational immunology to revisit the negative selection theory in light 
-of the new data \cite{Wortel2020t}.
-
-% Importance of scale
-After initial enthusiasm led to the establishment of a research community around 
-AIS, it quickly became clear that scale was a central issue in such systems. Like in the 
-real immune system, AISs had to provide very large numbers of classifiers to cover the 
-entire possible problem space, and the number of classifiers required  often scaled 
-exponentially with important parameters of the system. The inability to build AISs at the 
- scale required to solve challenging real-world problems may have been partly 
- responsible for the decline of the AIS field in the 2000s. However, algorithmic models 
- of the immune system continue to be relevant in (computational) immunology itself, 
-where they are used to improve our understanding of adaptive immune responses, and  
-ultimately to predict such responses. Again, the use of AISs in computational immunology 
-requires systems that are large enough to ask and address relevant questions. 
-
-It is perhaps instructive to compare AIS to artificial neural networks, 
-which went through an extended period of relative obscurity. Incremental 
-improvements in scale and efficiency were made -- until it suddenly became clear 
-that all these ``incremental'' developments taken together massively improved the utility 
-of such systems. Equally, we feel that AIS models deserve the attention to 
-detail needed to build them efficiently and at scale, in order to really 
-understand how these systems work and what they are capable of.
-
-% FSTs
-An important development in AIS methodology has been the idea that 
-\emph{compressed representations} of detector repertoires can be used to build much 
-more efficients AISs. This idea was initially used to debunk claims \cite{Timmis2008} 
-that detector generation for negative selection with so-called  
-r-chunk and r-contiguous detectors is an NP-hard problem \cite{Elberfeld2011}. It was 
-later shown how \emph{finite state machines (FSMs)} can be used as a generic building 
-block to build such compressed representations for arbitrary string matching rules, 
-although for some matching rules such compressed representations will still have an 
-exponential size in the worst cases \cite{Liskiewicz2010}. 
-Recently, an FSM-based AIS was used to build an algorithmic model of negative selection 
-consisting of tens of millions of detectors that processed the entire human proteome 
-as input \cite{Wortel2020t}. 
-
-However, these FSM-based AISs still have important limitations. Crucially, they represent 
-detector repertoires as sets without multiplicity. This means that all detectors in the 
-set will have equal importance or strength, which limits the complexity of the 
-information that can be stored.
-
-%\subsection{Our contributions}
-
-In this paper, we present a new type of AIS repertoire models where each detector in a 
-repertoire is assigned a weight, similar to how classifiers in LCS can be weighted. 
-Specifically, we: 
-
-\begin{enumerate}
-\item Define weighted versions of positive and negative selection, two of the most important AIS algorithms  (Section~\ref{sectionbackground});
-\item Show how weighted positive and negative selection can be implemented efficiently by using compressed repertoire representations based on weighted FSMs (Section~\ref{sectionfsms});
-\item Illustrate the potential benefit of using weights by comparing the performance of weighted versus unweighted repertoire models on simple string-based anomaly detection problems (Section~\ref{sectionempirical}).
-\end{enumerate}
-
