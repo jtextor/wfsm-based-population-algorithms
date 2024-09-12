@@ -1,0 +1,11 @@
+These satisfiability problems were obtained from a collection hosted here:
+
+https://www.cs.ubc.ca/~hoos/SATLIB/Benchmarks/SAT/RND3SAT/uf50-218.tar.gz
+
+Which is part of this larger collection:
+
+https://www.cs.ubc.ca/~hoos/SATLIB/benchm.html
+
+Original publication:
+
+Holger H. Hoos and Thomas Stützle: SATLIB: An Online Resource for Research on SAT. In: I.P.Gent, H.v.Maaren, T.Walsh, editors, SAT 2000, pp.283-292, IOS Press, 2000.
